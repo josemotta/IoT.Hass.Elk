@@ -37,10 +37,11 @@ services:
       - elasticsearch
 
   kibana:
-    build:
-      context: kibana/
-      args:
-        ELK_VERSION: $ELK_VERSION
+    image: docker.elastic.co/kibana/kibana:6.8.1
+    #build:
+    #  context: kibana/
+    #  args:
+    #    ELK_VERSION: $ELK_VERSION
     volumes:
       - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
     ports:
