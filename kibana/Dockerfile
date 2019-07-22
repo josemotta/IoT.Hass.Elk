@@ -7,10 +7,10 @@
 # Extract Kibana and make various file manipulations.
 ################################################################################
 FROM centos:7 AS prep_files
-RUN cd /opt && curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/kibana/kibana-7.2.0-linux-x86_64.tar.gz && cd -
+RUN cd /opt && curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/kibana/kibana-6.8.1.tar.gz && cd -
 RUN mkdir /usr/share/kibana
 WORKDIR /usr/share/kibana
-RUN tar --strip-components=1 -zxf /opt/kibana-7.2.0-linux-x86_64.tar.gz
+RUN tar --strip-components=1 -zxf /opt/kibana-6.8.1.tar.gz
 # Ensure that group permissions are the same as user permissions.
 # This will help when relying on GID-0 to run Kibana, rather than UID-1000.
 # OpenShift does this, for example.

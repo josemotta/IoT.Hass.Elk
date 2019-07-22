@@ -13,9 +13,9 @@ RUN groupadd --gid 1000 logstash && \
       logstash
 
 # Add Logstash itself.
-RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-7.2.0.tar.gz | \
+RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-6.8.1.tar.gz | \
     tar zxf - -C /usr/share && \
-    mv /usr/share/logstash-7.2.0 /usr/share/logstash && \
+    mv /usr/share/logstash-6.8.1 /usr/share/logstash && \
     chown --recursive logstash:logstash /usr/share/logstash/ && \
     chown -R logstash:root /usr/share/logstash && \
     chmod -R g=u /usr/share/logstash && \
