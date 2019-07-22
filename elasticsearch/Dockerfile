@@ -59,6 +59,8 @@ COPY --from=builder --chown=1000:0 /usr/share/elasticsearch /usr/share/elasticse
 
 ENV PATH /usr/share/elasticsearch/bin:$PATH
 
+RUN ls /usr/bin/java
+
 COPY --chown=1000:0 bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 # Openshift overrides USER and uses ones with randomly uid>1024 and gid=0
@@ -72,7 +74,7 @@ EXPOSE 9200 9300
 LABEL org.label-schema.schema-version="1.0" \
   org.label-schema.vendor="Elastic" \
   org.label-schema.name="elasticsearch" \
-  org.label-schema.version="7.2.0" \
+  org.label-schema.version="6.8.1" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   license="Elastic License"
