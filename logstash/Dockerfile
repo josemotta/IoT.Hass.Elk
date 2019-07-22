@@ -52,7 +52,7 @@ EXPOSE 9600 5044
 LABEL org.label-schema.schema-version="1.0" \
   org.label-schema.vendor="Elastic" \
   org.label-schema.name="logstash" \
-  org.label-schema.version="7.2.0" \
+  org.label-schema.version="6.8.1" \
   org.label-schema.url="https://www.elastic.co/products/logstash" \
   org.label-schema.vcs-url="https://github.com/elastic/logstash" \
 license="Elastic License"

@@ -50,6 +50,6 @@ RUN chmod g+ws /usr/share/kibana && find /usr/share/kibana -gid 0 -and -not -per
 RUN groupadd --gid 1000 kibana && useradd --uid 1000 --gid 1000 --home-dir /usr/share/kibana --no-create-home kibana
 USER kibana
 
-LABEL org.label-schema.schema-version="1.0" org.label-schema.vendor="Elastic" org.label-schema.name="kibana" org.label-schema.version="7.2.0" org.label-schema.url="https://www.elastic.co/products/kibana" org.label-schema.vcs-url="https://github.com/elastic/kibana" license="Elastic License"
+LABEL org.label-schema.schema-version="1.0" org.label-schema.vendor="Elastic" org.label-schema.name="kibana" org.label-schema.version="6.8.1" org.label-schema.url="https://www.elastic.co/products/kibana" org.label-schema.vcs-url="https://github.com/elastic/kibana" license="Elastic License"
 
 CMD ["/usr/local/bin/kibana-docker"]
