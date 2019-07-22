@@ -59,7 +59,7 @@ COPY --from=builder --chown=1000:0 /usr/share/elasticsearch /usr/share/elasticse
 
 ENV PATH /usr/share/elasticsearch/bin:$PATH
 
-RUN ls /usr/bin/java
+RUN ls /usr/share/elasticsearch
 
 COPY --chown=1000:0 bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
