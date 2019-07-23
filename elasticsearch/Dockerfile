@@ -47,9 +47,7 @@ RUN for iter in {1..10}; do yum update -y && \
 RUN groupadd -g 1000 elasticsearch && \
     adduser -u 1000 -g 1000 -G 0 -d /usr/share/elasticsearch elasticsearch && \
     chmod 0775 /usr/share/elasticsearch && \
-    chgrp 0 /usr/share/elasticsearch && \
-    chmod 0777 /usr/share/elasticsearch/logs && \
-    chgrp 0 /usr/share/elasticsearch/logs
+    chgrp 0 /usr/share/elasticsearch
 
 WORKDIR /usr/share/elasticsearch
 COPY --from=builder --chown=1000:0 /usr/share/elasticsearch /usr/share/elasticsearch
@@ -69,7 +67,8 @@ COPY --chown=1000:0 bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 # Allow ENTRYPOINT (and ES) to run even with a different user
 RUN chgrp 0 /usr/local/bin/docker-entrypoint.sh && \
     chmod g=u /etc/passwd && \
-    chmod 0775 /usr/local/bin/docker-entrypoint.sh
+    chmod 0775 /usr/local/bin/docker-entrypoint.sh && \
+    chmod 0777 /usr/share/elasticsearch/logs
 
 EXPOSE 9200 9300
 
