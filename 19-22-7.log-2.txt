@@ -1,0 +1,1147 @@
+pi@hassbian:~/IoT.Hass.Elk $ docker-compose up --build
+Building elasticsearch
+Step 1/23 : FROM centos:7 AS builder
+ ---> 8c52f2d0416f
+Step 2/23 : ENV PATH /usr/share/elasticsearch/bin:$PATH
+ ---> Using cache
+ ---> cdc52fc2dc5a
+Step 3/23 : RUN groupadd -g 1000 elasticsearch &&     adduser -u 1000 -g 1000 -d /usr/share/elasticsearch elasticsearch
+ ---> Using cache
+ ---> bb95d8b444ed
+Step 4/23 : WORKDIR /usr/share/elasticsearch
+ ---> Using cache
+ ---> 81535a2bd67f
+Step 5/23 : RUN cd /opt && curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.8.1.tar.gz && cd -
+ ---> Using cache
+ ---> fe3f61165221
+Step 6/23 : RUN tar zxf /opt/elasticsearch-6.8.1.tar.gz --strip-components=1
+ ---> Using cache
+ ---> 6127be486103
+Step 7/23 : RUN grep ES_DISTRIBUTION_TYPE=tar /usr/share/elasticsearch/bin/elasticsearch-env     && sed -ie 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' /usr/share/elasticsearch/bin/elasticsearch-env
+ ---> Using cache
+ ---> 4124174a9d42
+Step 8/23 : RUN mkdir -p config data logs
+ ---> Using cache
+ ---> b8e65d7ec10b
+Step 9/23 : RUN chmod 0775 config data logs
+ ---> Using cache
+ ---> d54edd31a5c5
+Step 10/23 : COPY config/elasticsearch.yml config/log4j2.properties config/
+ ---> Using cache
+ ---> ac496f89cd90
+Step 11/23 : FROM centos:7
+ ---> 8c52f2d0416f
+Step 12/23 : ENV ELASTIC_CONTAINER true
+ ---> Using cache
+ ---> 645cfe6bf413
+Step 13/23 : RUN for iter in {1..10}; do yum update -y &&     yum install -y nc &&     yum clean all && exit_code=0 && break || exit_code=$? && echo "yum error: retry $iter in 10s" && sleep 10; done;     (exit $exit_code)
+ ---> Using cache
+ ---> 258883139b62
+Step 14/23 : RUN groupadd -g 1000 elasticsearch &&     adduser -u 1000 -g 1000 -G 0 -d /usr/share/elasticsearch elasticsearch &&     chmod 0775 /usr/share/elasticsearch &&     chgrp 0 /usr/share/elasticsearch
+ ---> Using cache
+ ---> 7a3c19829110
+Step 15/23 : WORKDIR /usr/share/elasticsearch
+ ---> Using cache
+ ---> 7c34db33eb02
+Step 16/23 : COPY --from=builder --chown=1000:0 /usr/share/elasticsearch /usr/share/elasticsearch
+ ---> Using cache
+ ---> 04ff871fb2ac
+Step 17/23 : ENV PATH /usr/share/elasticsearch/bin:$PATH
+ ---> Using cache
+ ---> 48e1bd62ccb6
+Step 18/23 : COPY --chown=1000:0 bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+ ---> Using cache
+ ---> 978fd160a5bd
+Step 19/23 : RUN chgrp 0 /usr/local/bin/docker-entrypoint.sh &&     chmod g=u /etc/passwd &&     chmod 0775 /usr/local/bin/docker-entrypoint.sh
+ ---> Using cache
+ ---> a7f57db9bfe9
+Step 20/23 : EXPOSE 9200 9300
+ ---> Using cache
+ ---> feb53ed745c0
+Step 21/23 : LABEL org.label-schema.schema-version="1.0"   org.label-schema.vendor="Elastic"   org.label-schema.name="elasticsearch"   org.label-schema.version="7.2.0"   org.label-schema.url="https://www.elastic.co/products/elasticsearch"   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch"   license="Elastic License"
+ ---> Using cache
+ ---> 17e68d85484e
+Step 22/23 : ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+ ---> Using cache
+ ---> 13dbdebdb5d8
+Step 23/23 : CMD ["eswrapper"]
+ ---> Using cache
+ ---> 56c5dbcf6d59
+[Warning] One or more build-args [ELK_VERSION] were not consumed
+Successfully built 56c5dbcf6d59
+Successfully tagged iothasselk_elasticsearch:latest
+Building logstash
+Step 1/20 : FROM centos:7
+ ---> 8c52f2d0416f
+Step 2/20 : RUN yum update -y && yum install -y java-11-openjdk-devel which &&     yum clean all
+ ---> Running in e808f8285d27
+Loaded plugins: fastestmirror, ovl
+Determining fastest mirrors
+ * base: mirror.facebook.net
+ * centos-kernel: mirrors.xtom.com
+ * extras: mirror.math.princeton.edu
+ * updates: mirror.math.princeton.edu
+Resolving Dependencies
+--> Running transaction check
+---> Package bind-license.noarch 32:9.9.4-72.el7 will be updated
+---> Package bind-license.noarch 32:9.9.4-74.el7_6.1 will be an update
+---> Package dbus.armv7hl 1:1.10.24-12.el7 will be updated
+---> Package dbus.armv7hl 1:1.10.24-13.el7_6 will be an update
+---> Package dbus-libs.armv7hl 1:1.10.24-12.el7 will be updated
+---> Package dbus-libs.armv7hl 1:1.10.24-13.el7_6 will be an update
+---> Package device-mapper.armv7hl 7:1.02.149-10.el7_6.2 will be updated
+---> Package device-mapper.armv7hl 7:1.02.149-10.el7_6.8 will be an update
+---> Package device-mapper-libs.armv7hl 7:1.02.149-10.el7_6.2 will be updated
+---> Package device-mapper-libs.armv7hl 7:1.02.149-10.el7_6.8 will be an update
+---> Package glib2.armv7hl 0:2.56.1-2.el7 will be updated
+---> Package glib2.armv7hl 0:2.56.1-4.el7_6 will be an update
+---> Package glibc.armv7hl 0:2.17-260.el7 will be updated
+---> Package glibc.armv7hl 0:2.17-260.el7_6.6 will be an update
+---> Package glibc-common.armv7hl 0:2.17-260.el7 will be updated
+---> Package glibc-common.armv7hl 0:2.17-260.el7_6.6 will be an update
+---> Package krb5-libs.armv7hl 0:1.15.1-34.el7 will be updated
+---> Package krb5-libs.armv7hl 0:1.15.1-37.el7_6 will be an update
+---> Package libblkid.armv7hl 0:2.23.2-59.el7 will be updated
+---> Package libblkid.armv7hl 0:2.23.2-59.el7_6.1 will be an update
+---> Package libgcc.armv7hl 0:4.8.5-36.el7.0.1 will be updated
+---> Package libgcc.armv7hl 0:4.8.5-36.el7_6.2 will be an update
+---> Package libmount.armv7hl 0:2.23.2-59.el7 will be updated
+---> Package libmount.armv7hl 0:2.23.2-59.el7_6.1 will be an update
+---> Package libsmartcols.armv7hl 0:2.23.2-59.el7 will be updated
+---> Package libsmartcols.armv7hl 0:2.23.2-59.el7_6.1 will be an update
+---> Package libssh2.armv7hl 0:1.4.3-12.el7 will be updated
+---> Package libssh2.armv7hl 0:1.4.3-12.el7_6.2 will be an update
+---> Package libstdc++.armv7hl 0:4.8.5-36.el7.0.1 will be updated
+---> Package libstdc++.armv7hl 0:4.8.5-36.el7_6.2 will be an update
+---> Package libuuid.armv7hl 0:2.23.2-59.el7 will be updated
+---> Package libuuid.armv7hl 0:2.23.2-59.el7_6.1 will be an update
+---> Package nss.armv7hl 0:3.36.0-7.el7_5 will be updated
+---> Package nss.armv7hl 0:3.36.0-7.1.el7_6 will be an update
+---> Package nss-pem.armv7hl 0:1.0.3-5.el7 will be updated
+---> Package nss-pem.armv7hl 0:1.0.3-5.el7_6.1 will be an update
+---> Package nss-sysinit.armv7hl 0:3.36.0-7.el7_5 will be updated
+---> Package nss-sysinit.armv7hl 0:3.36.0-7.1.el7_6 will be an update
+---> Package nss-tools.armv7hl 0:3.36.0-7.el7_5 will be updated
+---> Package nss-tools.armv7hl 0:3.36.0-7.1.el7_6 will be an update
+---> Package nss-util.armv7hl 0:3.36.0-1.el7_5 will be updated
+---> Package nss-util.armv7hl 0:3.36.0-1.1.el7_6 will be an update
+---> Package openldap.armv7hl 0:2.4.44-20.el7 will be updated
+---> Package openldap.armv7hl 0:2.4.44-21.el7_6 will be an update
+---> Package openssl-libs.armv7hl 1:1.0.2k-16.el7 will be updated
+---> Package openssl-libs.armv7hl 1:1.0.2k-16.el7_6.1 will be an update
+---> Package python.armv7hl 0:2.7.5-76.el7 will be updated
+---> Package python.armv7hl 0:2.7.5-80.el7_6 will be an update
+---> Package python-libs.armv7hl 0:2.7.5-76.el7 will be updated
+---> Package python-libs.armv7hl 0:2.7.5-80.el7_6 will be an update
+---> Package shadow-utils.armv7hl 2:4.1.5.1-25.el7 will be updated
+---> Package shadow-utils.armv7hl 2:4.1.5.1-25.el7_6.1 will be an update
+---> Package systemd.armv7hl 0:219-62.el7 will be updated
+---> Package systemd.armv7hl 0:219-62.el7_6.7 will be an update
+---> Package systemd-libs.armv7hl 0:219-62.el7 will be updated
+---> Package systemd-libs.armv7hl 0:219-62.el7_6.7 will be an update
+---> Package tzdata.noarch 0:2018g-1.el7 will be updated
+---> Package tzdata.noarch 0:2019a-1.el7 will be an update
+---> Package util-linux.armv7hl 0:2.23.2-59.el7 will be updated
+---> Package util-linux.armv7hl 0:2.23.2-59.el7_6.1 will be an update
+---> Package vim-minimal.armv7hl 2:7.4.160-5.el7 will be updated
+---> Package vim-minimal.armv7hl 2:7.4.160-6.el7_6 will be an update
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+================================================================================
+ Package                Arch        Version                   Repository   Size
+================================================================================
+Updating:
+ bind-license           noarch      32:9.9.4-74.el7_6.1       updates      87 k
+ dbus                   armv7hl     1:1.10.24-13.el7_6        updates     230 k
+ dbus-libs              armv7hl     1:1.10.24-13.el7_6        updates     150 k
+ device-mapper          armv7hl     7:1.02.149-10.el7_6.8     updates     294 k
+ device-mapper-libs     armv7hl     7:1.02.149-10.el7_6.8     updates     316 k
+ glib2                  armv7hl     2.56.1-4.el7_6            updates     2.3 M
+ glibc                  armv7hl     2.17-260.el7_6.6          updates     3.4 M
+ glibc-common           armv7hl     2.17-260.el7_6.6          updates      11 M
+ krb5-libs              armv7hl     1.15.1-37.el7_6           updates     743 k
+ libblkid               armv7hl     2.23.2-59.el7_6.1         updates     171 k
+ libgcc                 armv7hl     4.8.5-36.el7_6.2          updates     101 k
+ libmount               armv7hl     2.23.2-59.el7_6.1         updates     171 k
+ libsmartcols           armv7hl     2.23.2-59.el7_6.1         updates     132 k
+ libssh2                armv7hl     1.4.3-12.el7_6.2          updates     126 k
+ libstdc++              armv7hl     4.8.5-36.el7_6.2          updates     270 k
+ libuuid                armv7hl     2.23.2-59.el7_6.1         updates      83 k
+ nss                    armv7hl     3.36.0-7.1.el7_6          updates     728 k
+ nss-pem                armv7hl     1.0.3-5.el7_6.1           updates      59 k
+ nss-sysinit            armv7hl     3.36.0-7.1.el7_6          updates      62 k
+ nss-tools              armv7hl     3.36.0-7.1.el7_6          updates     501 k
+ nss-util               armv7hl     3.36.0-1.1.el7_6          updates      67 k
+ openldap               armv7hl     2.4.44-21.el7_6           updates     317 k
+ openssl-libs           armv7hl     1:1.0.2k-16.el7_6.1       updates     856 k
+ python                 armv7hl     2.7.5-80.el7_6            updates      94 k
+ python-libs            armv7hl     2.7.5-80.el7_6            updates     5.5 M
+ shadow-utils           armv7hl     2:4.1.5.1-25.el7_6.1      updates     1.1 M
+ systemd                armv7hl     219-62.el7_6.7            updates     4.7 M
+ systemd-libs           armv7hl     219-62.el7_6.7            updates     374 k
+ tzdata                 noarch      2019a-1.el7               updates     494 k
+ util-linux             armv7hl     2.23.2-59.el7_6.1         updates     1.9 M
+ vim-minimal            armv7hl     2:7.4.160-6.el7_6         updates     359 k
+
+Transaction Summary
+================================================================================
+Upgrade  31 Packages
+
+Total download size: 37 M
+Downloading packages:
+Delta RPMs disabled because /usr/bin/applydeltarpm not installed.
+warning: /var/cache/yum/armhfp/7/updates/packages/bind-license-9.9.4-74.el7_6.1.noarch.rpm: Header V3 RSA/SHA256 Signature, key ID f4a80eb5: NOKEY
+Public key for bind-license-9.9.4-74.el7_6.1.noarch.rpm is not installed
+--------------------------------------------------------------------------------
+Total                                              4.2 MB/s |  37 MB  00:08
+warning: /var/cache/yum/armhfp/7/updates/packages/glibc-common-2.17-260.el7_6.6.armv7hl.rpm: Header V3 RSA/SHA256 Signature, key ID 62505fe6: NOKEY
+Retrieving key from file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+Importing GPG key 0xF4A80EB5:
+ Userid     : "CentOS-7 Key (CentOS 7 Official Signing Key) <security@centos.org>"
+ Fingerprint: 6341 ab27 53d7 8a78 a7c2 7bb1 24c6 a8a7 f4a8 0eb5
+ Package    : centos-userland-release-7-6.1810.2.el7.centos.armv7hl (@CentOS)
+ From       : /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+Retrieving key from file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-AltArch-Arm32
+Importing GPG key 0x62505FE6:
+ Userid     : "CentOS AltArch SIG - Arm32 (https://wiki.centos.org/SpecialInterestGroup/AltArch/Arm32) <security@centos.org>"
+ Fingerprint: 4d9e 39f1 499c a21d d289 77f8 cafe f11b 6250 5fe6
+ Package    : centos-userland-release-7-6.1810.2.el7.centos.armv7hl (@CentOS)
+ From       : /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-AltArch-Arm32
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Updating   : tzdata-2019a-1.el7.noarch                                   1/62
+  Updating   : 32:bind-license-9.9.4-74.el7_6.1.noarch                     2/62
+  Updating   : libgcc-4.8.5-36.el7_6.2.armv7hl                             3/62
+  Updating   : glibc-2.17-260.el7_6.6.armv7hl                              4/62
+  Updating   : glibc-common-2.17-260.el7_6.6.armv7hl                       5/62
+  Updating   : systemd-libs-219-62.el7_6.7.armv7hl                         6/62
+  Updating   : nss-util-3.36.0-1.1.el7_6.armv7hl                           7/62
+  Updating   : libuuid-2.23.2-59.el7_6.1.armv7hl                           8/62
+  Updating   : libblkid-2.23.2-59.el7_6.1.armv7hl                          9/62
+  Updating   : libmount-2.23.2-59.el7_6.1.armv7hl                         10/62
+  Updating   : 2:shadow-utils-4.1.5.1-25.el7_6.1.armv7hl                  11/62
+  Updating   : nss-sysinit-3.36.0-7.1.el7_6.armv7hl                       12/62
+  Updating   : nss-pem-1.0.3-5.el7_6.1.armv7hl                            13/62
+  Updating   : nss-3.36.0-7.1.el7_6.armv7hl                               14/62
+  Updating   : nss-tools-3.36.0-7.1.el7_6.armv7hl                         15/62
+  Updating   : 1:dbus-libs-1.10.24-13.el7_6.armv7hl                       16/62
+  Updating   : systemd-219-62.el7_6.7.armv7hl                             17/62
+Failed to get D-Bus connection: Operation not permitted
+  Updating   : 1:dbus-1.10.24-13.el7_6.armv7hl                            18/62
+  Updating   : krb5-libs-1.15.1-37.el7_6.armv7hl                          19/62
+  Updating   : 1:openssl-libs-1.0.2k-16.el7_6.1.armv7hl                   20/62
+  Updating   : python-libs-2.7.5-80.el7_6.armv7hl                         21/62
+  Updating   : libsmartcols-2.23.2-59.el7_6.1.armv7hl                     22/62
+  Updating   : util-linux-2.23.2-59.el7_6.1.armv7hl                       23/62
+  Updating   : 7:device-mapper-libs-1.02.149-10.el7_6.8.armv7hl           24/62
+  Updating   : 7:device-mapper-1.02.149-10.el7_6.8.armv7hl                25/62
+  Updating   : python-2.7.5-80.el7_6.armv7hl                              26/62
+  Updating   : libssh2-1.4.3-12.el7_6.2.armv7hl                           27/62
+  Updating   : openldap-2.4.44-21.el7_6.armv7hl                           28/62
+  Updating   : glib2-2.56.1-4.el7_6.armv7hl                               29/62
+  Updating   : libstdc++-4.8.5-36.el7_6.2.armv7hl                         30/62
+  Updating   : 2:vim-minimal-7.4.160-6.el7_6.armv7hl                      31/62
+  Cleanup    : openldap-2.4.44-20.el7.armv7hl                             32/62
+  Cleanup    : nss-tools-3.36.0-7.el7_5.armv7hl                           33/62
+  Cleanup    : nss-pem-1.0.3-5.el7.armv7hl                                34/62
+  Cleanup    : nss-3.36.0-7.el7_5.armv7hl                                 35/62
+  Cleanup    : nss-sysinit-3.36.0-7.el7_5.armv7hl                         36/62
+  Cleanup    : 7:device-mapper-1.02.149-10.el7_6.2.armv7hl                37/62
+  Cleanup    : 7:device-mapper-libs-1.02.149-10.el7_6.2.armv7hl           38/62
+  Cleanup    : 1:dbus-1.10.24-12.el7.armv7hl                              39/62
+  Cleanup    : systemd-219-62.el7.armv7hl                                 40/62
+  Cleanup    : util-linux-2.23.2-59.el7.armv7hl                           41/62
+  Cleanup    : python-2.7.5-76.el7.armv7hl                                42/62
+  Cleanup    : python-libs-2.7.5-76.el7.armv7hl                           43/62
+  Cleanup    : 1:dbus-libs-1.10.24-12.el7.armv7hl                         44/62
+  Cleanup    : libssh2-1.4.3-12.el7.armv7hl                               45/62
+  Cleanup    : 1:openssl-libs-1.0.2k-16.el7.armv7hl                       46/62
+  Cleanup    : krb5-libs-1.15.1-34.el7.armv7hl                            47/62
+  Cleanup    : glib2-2.56.1-2.el7.armv7hl                                 48/62
+  Cleanup    : libmount-2.23.2-59.el7.armv7hl                             49/62
+  Cleanup    : libblkid-2.23.2-59.el7.armv7hl                             50/62
+  Cleanup    : libuuid-2.23.2-59.el7.armv7hl                              51/62
+  Cleanup    : systemd-libs-219-62.el7.armv7hl                            52/62
+  Cleanup    : libsmartcols-2.23.2-59.el7.armv7hl                         53/62
+  Cleanup    : 2:shadow-utils-4.1.5.1-25.el7.armv7hl                      54/62
+  Cleanup    : nss-util-3.36.0-1.el7_5.armv7hl                            55/62
+  Cleanup    : 2:vim-minimal-7.4.160-5.el7.armv7hl                        56/62
+  Cleanup    : libstdc++-4.8.5-36.el7.0.1.armv7hl                         57/62
+  Cleanup    : glibc-2.17-260.el7.armv7hl                                 58/62
+  Cleanup    : glibc-common-2.17-260.el7.armv7hl                          59/62
+  Cleanup    : tzdata-2018g-1.el7.noarch                                  60/62
+  Cleanup    : libgcc-4.8.5-36.el7.0.1.armv7hl                            61/62
+  Cleanup    : 32:bind-license-9.9.4-72.el7.noarch                        62/62
+  Verifying  : glibc-common-2.17-260.el7_6.6.armv7hl                       1/62
+  Verifying  : nss-sysinit-3.36.0-7.1.el7_6.armv7hl                        2/62
+  Verifying  : krb5-libs-1.15.1-37.el7_6.armv7hl                           3/62
+  Verifying  : util-linux-2.23.2-59.el7_6.1.armv7hl                        4/62
+  Verifying  : 7:device-mapper-libs-1.02.149-10.el7_6.8.armv7hl            5/62
+  Verifying  : python-2.7.5-80.el7_6.armv7hl                               6/62
+  Verifying  : nss-tools-3.36.0-7.1.el7_6.armv7hl                          7/62
+  Verifying  : 32:bind-license-9.9.4-74.el7_6.1.noarch                     8/62
+  Verifying  : tzdata-2019a-1.el7.noarch                                   9/62
+  Verifying  : glibc-2.17-260.el7_6.6.armv7hl                             10/62
+  Verifying  : systemd-219-62.el7_6.7.armv7hl                             11/62
+  Verifying  : libblkid-2.23.2-59.el7_6.1.armv7hl                         12/62
+  Verifying  : systemd-libs-219-62.el7_6.7.armv7hl                        13/62
+  Verifying  : python-libs-2.7.5-80.el7_6.armv7hl                         14/62
+  Verifying  : libsmartcols-2.23.2-59.el7_6.1.armv7hl                     15/62
+  Verifying  : nss-util-3.36.0-1.1.el7_6.armv7hl                          16/62
+  Verifying  : 7:device-mapper-1.02.149-10.el7_6.8.armv7hl                17/62
+  Verifying  : libssh2-1.4.3-12.el7_6.2.armv7hl                           18/62
+  Verifying  : libuuid-2.23.2-59.el7_6.1.armv7hl                          19/62
+  Verifying  : nss-pem-1.0.3-5.el7_6.1.armv7hl                            20/62
+  Verifying  : libstdc++-4.8.5-36.el7_6.2.armv7hl                         21/62
+  Verifying  : 1:openssl-libs-1.0.2k-16.el7_6.1.armv7hl                   22/62
+  Verifying  : libgcc-4.8.5-36.el7_6.2.armv7hl                            23/62
+  Verifying  : openldap-2.4.44-21.el7_6.armv7hl                           24/62
+  Verifying  : nss-3.36.0-7.1.el7_6.armv7hl                               25/62
+  Verifying  : 2:shadow-utils-4.1.5.1-25.el7_6.1.armv7hl                  26/62
+  Verifying  : 2:vim-minimal-7.4.160-6.el7_6.armv7hl                      27/62
+  Verifying  : libmount-2.23.2-59.el7_6.1.armv7hl                         28/62
+  Verifying  : 1:dbus-1.10.24-13.el7_6.armv7hl                            29/62
+  Verifying  : 1:dbus-libs-1.10.24-13.el7_6.armv7hl                       30/62
+  Verifying  : glib2-2.56.1-4.el7_6.armv7hl                               31/62
+  Verifying  : 7:device-mapper-1.02.149-10.el7_6.2.armv7hl                32/62
+  Verifying  : libstdc++-4.8.5-36.el7.0.1.armv7hl                         33/62
+  Verifying  : 1:dbus-1.10.24-12.el7.armv7hl                              34/62
+  Verifying  : nss-tools-3.36.0-7.el7_5.armv7hl                           35/62
+  Verifying  : util-linux-2.23.2-59.el7.armv7hl                           36/62
+  Verifying  : python-2.7.5-76.el7.armv7hl                                37/62
+  Verifying  : libblkid-2.23.2-59.el7.armv7hl                             38/62
+  Verifying  : glibc-2.17-260.el7.armv7hl                                 39/62
+  Verifying  : libgcc-4.8.5-36.el7.0.1.armv7hl                            40/62
+  Verifying  : systemd-219-62.el7.armv7hl                                 41/62
+  Verifying  : nss-util-3.36.0-1.el7_5.armv7hl                            42/62
+  Verifying  : libsmartcols-2.23.2-59.el7.armv7hl                         43/62
+  Verifying  : nss-pem-1.0.3-5.el7.armv7hl                                44/62
+  Verifying  : glibc-common-2.17-260.el7.armv7hl                          45/62
+  Verifying  : nss-3.36.0-7.el7_5.armv7hl                                 46/62
+  Verifying  : openldap-2.4.44-20.el7.armv7hl                             47/62
+  Verifying  : python-libs-2.7.5-76.el7.armv7hl                           48/62
+  Verifying  : 1:dbus-libs-1.10.24-12.el7.armv7hl                         49/62
+  Verifying  : 1:openssl-libs-1.0.2k-16.el7.armv7hl                       50/62
+  Verifying  : krb5-libs-1.15.1-34.el7.armv7hl                            51/62
+  Verifying  : 2:shadow-utils-4.1.5.1-25.el7.armv7hl                      52/62
+  Verifying  : 7:device-mapper-libs-1.02.149-10.el7_6.2.armv7hl           53/62
+  Verifying  : libssh2-1.4.3-12.el7.armv7hl                               54/62
+  Verifying  : glib2-2.56.1-2.el7.armv7hl                                 55/62
+  Verifying  : 32:bind-license-9.9.4-72.el7.noarch                        56/62
+  Verifying  : systemd-libs-219-62.el7.armv7hl                            57/62
+  Verifying  : tzdata-2018g-1.el7.noarch                                  58/62
+  Verifying  : libmount-2.23.2-59.el7.armv7hl                             59/62
+  Verifying  : 2:vim-minimal-7.4.160-5.el7.armv7hl                        60/62
+  Verifying  : libuuid-2.23.2-59.el7.armv7hl                              61/62
+  Verifying  : nss-sysinit-3.36.0-7.el7_5.armv7hl                         62/62
+
+Updated:
+  bind-license.noarch 32:9.9.4-74.el7_6.1
+  dbus.armv7hl 1:1.10.24-13.el7_6
+  dbus-libs.armv7hl 1:1.10.24-13.el7_6
+  device-mapper.armv7hl 7:1.02.149-10.el7_6.8
+  device-mapper-libs.armv7hl 7:1.02.149-10.el7_6.8
+  glib2.armv7hl 0:2.56.1-4.el7_6
+  glibc.armv7hl 0:2.17-260.el7_6.6
+  glibc-common.armv7hl 0:2.17-260.el7_6.6
+  krb5-libs.armv7hl 0:1.15.1-37.el7_6
+  libblkid.armv7hl 0:2.23.2-59.el7_6.1
+  libgcc.armv7hl 0:4.8.5-36.el7_6.2
+  libmount.armv7hl 0:2.23.2-59.el7_6.1
+  libsmartcols.armv7hl 0:2.23.2-59.el7_6.1
+  libssh2.armv7hl 0:1.4.3-12.el7_6.2
+  libstdc++.armv7hl 0:4.8.5-36.el7_6.2
+  libuuid.armv7hl 0:2.23.2-59.el7_6.1
+  nss.armv7hl 0:3.36.0-7.1.el7_6
+  nss-pem.armv7hl 0:1.0.3-5.el7_6.1
+  nss-sysinit.armv7hl 0:3.36.0-7.1.el7_6
+  nss-tools.armv7hl 0:3.36.0-7.1.el7_6
+  nss-util.armv7hl 0:3.36.0-1.1.el7_6
+  openldap.armv7hl 0:2.4.44-21.el7_6
+  openssl-libs.armv7hl 1:1.0.2k-16.el7_6.1
+  python.armv7hl 0:2.7.5-80.el7_6
+  python-libs.armv7hl 0:2.7.5-80.el7_6
+  shadow-utils.armv7hl 2:4.1.5.1-25.el7_6.1
+  systemd.armv7hl 0:219-62.el7_6.7
+  systemd-libs.armv7hl 0:219-62.el7_6.7
+  tzdata.noarch 0:2019a-1.el7
+  util-linux.armv7hl 0:2.23.2-59.el7_6.1
+  vim-minimal.armv7hl 2:7.4.160-6.el7_6
+
+Complete!
+Loaded plugins: fastestmirror, ovl
+Loading mirror speeds from cached hostfile
+ * base: mirror.facebook.net
+ * centos-kernel: mirrors.xtom.com
+ * extras: mirror.math.princeton.edu
+ * updates: mirror.math.princeton.edu
+Resolving Dependencies
+--> Running transaction check
+---> Package java-11-openjdk-devel.armv7hl 1:11.0.3.7-0.el7_6 will be installed
+--> Processing Dependency: java-11-openjdk(armv7hl-32) = 1:11.0.3.7-0.el7_6 for package: 1:java-11-openjdk-devel-11.0.3.7-0.el7_6.armv7hl
+---> Package which.armv7hl 0:2.20-7.el7 will be installed
+--> Running transaction check
+---> Package java-11-openjdk.armv7hl 1:11.0.3.7-0.el7_6 will be installed
+--> Processing Dependency: java-11-openjdk-headless(armv7hl-32) = 1:11.0.3.7-0.el7_6 for package: 1:java-11-openjdk-11.0.3.7-0.el7_6.armv7hl
+--> Processing Dependency: xorg-x11-fonts-Type1 for package: 1:java-11-openjdk-11.0.3.7-0.el7_6.armv7hl
+--> Processing Dependency: libpng15.so.15(PNG15_0) for package: 1:java-11-openjdk-11.0.3.7-0.el7_6.armv7hl
+--> Processing Dependency: libpng15.so.15 for package: 1:java-11-openjdk-11.0.3.7-0.el7_6.armv7hl
+--> Processing Dependency: libjvm.so for package: 1:java-11-openjdk-11.0.3.7-0.el7_6.armv7hl
+--> Processing Dependency: libjpeg.so.62(LIBJPEG_6.2) for package: 1:java-11-openjdk-11.0.3.7-0.el7_6.armv7hl
+--> Processing Dependency: libjpeg.so.62 for package: 1:java-11-openjdk-11.0.3.7-0.el7_6.armv7hl
+--> Processing Dependency: libjava.so for package: 1:java-11-openjdk-11.0.3.7-0.el7_6.armv7hl
+--> Processing Dependency: libgif.so.4 for package: 1:java-11-openjdk-11.0.3.7-0.el7_6.armv7hl
+--> Processing Dependency: libXtst.so.6 for package: 1:java-11-openjdk-11.0.3.7-0.el7_6.armv7hl
+--> Processing Dependency: libXrender.so.1 for package: 1:java-11-openjdk-11.0.3.7-0.el7_6.armv7hl
+--> Processing Dependency: libXi.so.6 for package: 1:java-11-openjdk-11.0.3.7-0.el7_6.armv7hl
+--> Processing Dependency: libXext.so.6 for package: 1:java-11-openjdk-11.0.3.7-0.el7_6.armv7hl
+--> Processing Dependency: libX11.so.6 for package: 1:java-11-openjdk-11.0.3.7-0.el7_6.armv7hl
+--> Processing Dependency: fontconfig(armv7hl-32) for package: 1:java-11-openjdk-11.0.3.7-0.el7_6.armv7hl
+--> Running transaction check
+---> Package fontconfig.armv7hl 0:2.13.0-4.3.el7 will be installed
+--> Processing Dependency: freetype >= 2.8-7 for package: fontconfig-2.13.0-4.3.el7.armv7hl
+--> Processing Dependency: libfreetype.so.6 for package: fontconfig-2.13.0-4.3.el7.armv7hl
+--> Processing Dependency: freetype for package: fontconfig-2.13.0-4.3.el7.armv7hl
+--> Processing Dependency: fontpackages-filesystem for package: fontconfig-2.13.0-4.3.el7.armv7hl
+--> Processing Dependency: dejavu-sans-fonts for package: fontconfig-2.13.0-4.3.el7.armv7hl
+---> Package giflib.armv7hl 0:4.1.6-9.el7 will be installed
+--> Processing Dependency: libSM.so.6 for package: giflib-4.1.6-9.el7.armv7hl
+--> Processing Dependency: libICE.so.6 for package: giflib-4.1.6-9.el7.armv7hl
+---> Package java-11-openjdk-headless.armv7hl 1:11.0.3.7-0.el7_6 will be installed
+--> Processing Dependency: tzdata-java >= 2015d for package: 1:java-11-openjdk-headless-11.0.3.7-0.el7_6.armv7hl
+--> Processing Dependency: copy-jdk-configs >= 3.3 for package: 1:java-11-openjdk-headless-11.0.3.7-0.el7_6.armv7hl
+--> Processing Dependency: lksctp-tools(armv7hl-32) for package: 1:java-11-openjdk-headless-11.0.3.7-0.el7_6.armv7hl
+--> Processing Dependency: libasound.so.2(ALSA_0.9.0rc4) for package: 1:java-11-openjdk-headless-11.0.3.7-0.el7_6.armv7hl
+--> Processing Dependency: libasound.so.2(ALSA_0.9) for package: 1:java-11-openjdk-headless-11.0.3.7-0.el7_6.armv7hl
+--> Processing Dependency: libasound.so.2 for package: 1:java-11-openjdk-headless-11.0.3.7-0.el7_6.armv7hl
+--> Processing Dependency: javapackages-tools for package: 1:java-11-openjdk-headless-11.0.3.7-0.el7_6.armv7hl
+---> Package libX11.armv7hl 0:1.6.5-2.el7 will be installed
+--> Processing Dependency: libX11-common >= 1.6.5-2.el7 for package: libX11-1.6.5-2.el7.armv7hl
+--> Processing Dependency: libxcb.so.1 for package: libX11-1.6.5-2.el7.armv7hl
+---> Package libXext.armv7hl 0:1.3.3-3.el7 will be installed
+---> Package libXi.armv7hl 0:1.7.9-1.el7 will be installed
+---> Package libXrender.armv7hl 0:0.9.10-1.el7 will be installed
+---> Package libXtst.armv7hl 0:1.2.3-1.el7 will be installed
+---> Package libjpeg-turbo.armv7hl 0:1.2.90-6.el7 will be installed
+---> Package libpng.armv7hl 2:1.5.13-7.el7 will be installed
+---> Package xorg-x11-fonts-Type1.noarch 0:7.5-9.el7 will be installed
+--> Processing Dependency: ttmkfdir for package: xorg-x11-fonts-Type1-7.5-9.el7.noarch
+--> Processing Dependency: ttmkfdir for package: xorg-x11-fonts-Type1-7.5-9.el7.noarch
+--> Processing Dependency: mkfontdir for package: xorg-x11-fonts-Type1-7.5-9.el7.noarch
+--> Processing Dependency: mkfontdir for package: xorg-x11-fonts-Type1-7.5-9.el7.noarch
+--> Running transaction check
+---> Package alsa-lib.armv7hl 0:1.1.6-2.el7 will be installed
+---> Package copy-jdk-configs.noarch 0:3.3-10.el7_5 will be installed
+---> Package dejavu-sans-fonts.noarch 0:2.33-6.el7 will be installed
+--> Processing Dependency: dejavu-fonts-common = 2.33-6.el7 for package: dejavu-sans-fonts-2.33-6.el7.noarch
+---> Package fontpackages-filesystem.noarch 0:1.44-8.el7 will be installed
+---> Package freetype.armv7hl 0:2.8-12.el7_6.1 will be installed
+---> Package javapackages-tools.noarch 0:3.4.1-11.el7 will be installed
+--> Processing Dependency: python-javapackages = 3.4.1-11.el7 for package: javapackages-tools-3.4.1-11.el7.noarch
+--> Processing Dependency: libxslt for package: javapackages-tools-3.4.1-11.el7.noarch
+---> Package libICE.armv7hl 0:1.0.9-9.el7 will be installed
+---> Package libSM.armv7hl 0:1.2.2-2.el7 will be installed
+---> Package libX11-common.noarch 0:1.6.5-2.el7 will be installed
+---> Package libxcb.armv7hl 0:1.13-1.el7 will be installed
+--> Processing Dependency: libXau.so.6 for package: libxcb-1.13-1.el7.armv7hl
+---> Package lksctp-tools.armv7hl 0:1.0.17-2.el7 will be installed
+---> Package ttmkfdir.armv7hl 0:3.0.9-42.el7 will be installed
+---> Package tzdata-java.noarch 0:2019a-1.el7 will be installed
+---> Package xorg-x11-font-utils.armv7hl 1:7.5-21.el7 will be installed
+--> Processing Dependency: libfontenc.so.1 for package: 1:xorg-x11-font-utils-7.5-21.el7.armv7hl
+--> Running transaction check
+---> Package dejavu-fonts-common.noarch 0:2.33-6.el7 will be installed
+---> Package libXau.armv7hl 0:1.0.8-2.1.el7 will be installed
+---> Package libfontenc.armv7hl 0:1.1.3-3.el7 will be installed
+---> Package libxslt.armv7hl 0:1.1.28-5.el7 will be installed
+---> Package python-javapackages.noarch 0:3.4.1-11.el7 will be installed
+--> Processing Dependency: python-lxml for package: python-javapackages-3.4.1-11.el7.noarch
+--> Running transaction check
+---> Package python-lxml.armv7hl 0:3.2.1-4.el7 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+================================================================================
+ Package                     Arch       Version                Repository  Size
+================================================================================
+Installing:
+ java-11-openjdk-devel       armv7hl    1:11.0.3.7-0.el7_6     updates    3.4 M
+ which                       armv7hl    2.20-7.el7             base        39 k
+Installing for dependencies:
+ alsa-lib                    armv7hl    1.1.6-2.el7            base       379 k
+ copy-jdk-configs            noarch     3.3-10.el7_5           base        21 k
+ dejavu-fonts-common         noarch     2.33-6.el7             base        64 k
+ dejavu-sans-fonts           noarch     2.33-6.el7             base       1.4 M
+ fontconfig                  armv7hl    2.13.0-4.3.el7         base       239 k
+ fontpackages-filesystem     noarch     1.44-8.el7             base       9.9 k
+ freetype                    armv7hl    2.8-12.el7_6.1         updates    331 k
+ giflib                      armv7hl    4.1.6-9.el7            base        38 k
+ java-11-openjdk             armv7hl    1:11.0.3.7-0.el7_6     updates    173 k
+ java-11-openjdk-headless    armv7hl    1:11.0.3.7-0.el7_6     updates     33 M
+ javapackages-tools          noarch     3.4.1-11.el7           base        73 k
+ libICE                      armv7hl    1.0.9-9.el7            base        60 k
+ libSM                       armv7hl    1.2.2-2.el7            base        37 k
+ libX11                      armv7hl    1.6.5-2.el7            base       559 k
+ libX11-common               noarch     1.6.5-2.el7            base       164 k
+ libXau                      armv7hl    1.0.8-2.1.el7          base        28 k
+ libXext                     armv7hl    1.3.3-3.el7            base        34 k
+ libXi                       armv7hl    1.7.9-1.el7            base        36 k
+ libXrender                  armv7hl    0.9.10-1.el7           base        23 k
+ libXtst                     armv7hl    1.2.3-1.el7            base        19 k
+ libfontenc                  armv7hl    1.1.3-3.el7            base        29 k
+ libjpeg-turbo               armv7hl    1.2.90-6.el7           base       116 k
+ libpng                      armv7hl    2:1.5.13-7.el7         base       201 k
+ libxcb                      armv7hl    1.13-1.el7             base       193 k
+ libxslt                     armv7hl    1.1.28-5.el7           base       224 k
+ lksctp-tools                armv7hl    1.0.17-2.el7           base        84 k
+ python-javapackages         noarch     3.4.1-11.el7           base        31 k
+ python-lxml                 armv7hl    3.2.1-4.el7            base       712 k
+ ttmkfdir                    armv7hl    3.0.9-42.el7           base        43 k
+ tzdata-java                 noarch     2019a-1.el7            updates    187 k
+ xorg-x11-font-utils         armv7hl    1:7.5-21.el7           base        97 k
+ xorg-x11-fonts-Type1        noarch     7.5-9.el7              base       521 k
+
+Transaction Summary
+================================================================================
+Install  2 Packages (+32 Dependent packages)
+
+Total download size: 43 M
+Installed size: 159 M
+Downloading packages:
+--------------------------------------------------------------------------------
+Total                                              2.6 MB/s |  43 MB  00:16
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : fontpackages-filesystem-1.44-8.el7.noarch                   1/34
+  Installing : dejavu-fonts-common-2.33-6.el7.noarch                       2/34
+  Installing : dejavu-sans-fonts-2.33-6.el7.noarch                         3/34
+  Installing : libX11-common-1.6.5-2.el7.noarch                            4/34
+  Installing : tzdata-java-2019a-1.el7.noarch                              5/34
+  Installing : copy-jdk-configs-3.3-10.el7_5.noarch                        6/34
+  Installing : libICE-1.0.9-9.el7.armv7hl                                  7/34
+  Installing : libjpeg-turbo-1.2.90-6.el7.armv7hl                          8/34
+  Installing : 2:libpng-1.5.13-7.el7.armv7hl                               9/34
+  Installing : freetype-2.8-12.el7_6.1.armv7hl                            10/34
+  Installing : fontconfig-2.13.0-4.3.el7.armv7hl                          11/34
+  Installing : libxslt-1.1.28-5.el7.armv7hl                               12/34
+  Installing : python-lxml-3.2.1-4.el7.armv7hl                            13/34
+  Installing : python-javapackages-3.4.1-11.el7.noarch                    14/34
+  Installing : javapackages-tools-3.4.1-11.el7.noarch                     15/34
+  Installing : ttmkfdir-3.0.9-42.el7.armv7hl                              16/34
+  Installing : libSM-1.2.2-2.el7.armv7hl                                  17/34
+  Installing : alsa-lib-1.1.6-2.el7.armv7hl                               18/34
+  Installing : libfontenc-1.1.3-3.el7.armv7hl                             19/34
+  Installing : 1:xorg-x11-font-utils-7.5-21.el7.armv7hl                   20/34
+  Installing : xorg-x11-fonts-Type1-7.5-9.el7.noarch                      21/34
+  Installing : lksctp-tools-1.0.17-2.el7.armv7hl                          22/34
+  Installing : 1:java-11-openjdk-headless-11.0.3.7-0.el7_6.armv7hl        23/34
+  Installing : libXau-1.0.8-2.1.el7.armv7hl                               24/34
+  Installing : libxcb-1.13-1.el7.armv7hl                                  25/34
+  Installing : libX11-1.6.5-2.el7.armv7hl                                 26/34
+  Installing : libXext-1.3.3-3.el7.armv7hl                                27/34
+  Installing : libXi-1.7.9-1.el7.armv7hl                                  28/34
+  Installing : libXtst-1.2.3-1.el7.armv7hl                                29/34
+  Installing : libXrender-0.9.10-1.el7.armv7hl                            30/34
+  Installing : giflib-4.1.6-9.el7.armv7hl                                 31/34
+  Installing : 1:java-11-openjdk-11.0.3.7-0.el7_6.armv7hl                 32/34
+  Installing : 1:java-11-openjdk-devel-11.0.3.7-0.el7_6.armv7hl           33/34
+  Installing : which-2.20-7.el7.armv7hl                                   34/34
+install-info: No such file or directory for /usr/share/info/which.info.gz
+  Verifying  : python-javapackages-3.4.1-11.el7.noarch                     1/34
+  Verifying  : libxcb-1.13-1.el7.armv7hl                                   2/34
+  Verifying  : libXau-1.0.8-2.1.el7.armv7hl                                3/34
+  Verifying  : freetype-2.8-12.el7_6.1.armv7hl                             4/34
+  Verifying  : 1:java-11-openjdk-11.0.3.7-0.el7_6.armv7hl                  5/34
+  Verifying  : python-lxml-3.2.1-4.el7.armv7hl                             6/34
+  Verifying  : fontpackages-filesystem-1.44-8.el7.noarch                   7/34
+  Verifying  : libSM-1.2.2-2.el7.armv7hl                                   8/34
+  Verifying  : which-2.20-7.el7.armv7hl                                    9/34
+  Verifying  : libXrender-0.9.10-1.el7.armv7hl                            10/34
+  Verifying  : copy-jdk-configs-3.3-10.el7_5.noarch                       11/34
+  Verifying  : fontconfig-2.13.0-4.3.el7.armv7hl                          12/34
+  Verifying  : dejavu-fonts-common-2.33-6.el7.noarch                      13/34
+  Verifying  : libXtst-1.2.3-1.el7.armv7hl                                14/34
+  Verifying  : libxslt-1.1.28-5.el7.armv7hl                               15/34
+  Verifying  : 1:java-11-openjdk-headless-11.0.3.7-0.el7_6.armv7hl        16/34
+  Verifying  : libXi-1.7.9-1.el7.armv7hl                                  17/34
+  Verifying  : xorg-x11-fonts-Type1-7.5-9.el7.noarch                      18/34
+  Verifying  : lksctp-tools-1.0.17-2.el7.armv7hl                          19/34
+  Verifying  : libfontenc-1.1.3-3.el7.armv7hl                             20/34
+  Verifying  : 2:libpng-1.5.13-7.el7.armv7hl                              21/34
+  Verifying  : dejavu-sans-fonts-2.33-6.el7.noarch                        22/34
+  Verifying  : 1:java-11-openjdk-devel-11.0.3.7-0.el7_6.armv7hl           23/34
+  Verifying  : tzdata-java-2019a-1.el7.noarch                             24/34
+  Verifying  : giflib-4.1.6-9.el7.armv7hl                                 25/34
+  Verifying  : javapackages-tools-3.4.1-11.el7.noarch                     26/34
+  Verifying  : libjpeg-turbo-1.2.90-6.el7.armv7hl                         27/34
+  Verifying  : 1:xorg-x11-font-utils-7.5-21.el7.armv7hl                   28/34
+  Verifying  : libX11-common-1.6.5-2.el7.noarch                           29/34
+  Verifying  : ttmkfdir-3.0.9-42.el7.armv7hl                              30/34
+  Verifying  : libICE-1.0.9-9.el7.armv7hl                                 31/34
+  Verifying  : alsa-lib-1.1.6-2.el7.armv7hl                               32/34
+  Verifying  : libX11-1.6.5-2.el7.armv7hl                                 33/34
+  Verifying  : libXext-1.3.3-3.el7.armv7hl                                34/34
+
+Installed:
+  java-11-openjdk-devel.armv7hl 1:11.0.3.7-0.el7_6  which.armv7hl 0:2.20-7.el7
+
+Dependency Installed:
+  alsa-lib.armv7hl 0:1.1.6-2.el7
+  copy-jdk-configs.noarch 0:3.3-10.el7_5
+  dejavu-fonts-common.noarch 0:2.33-6.el7
+  dejavu-sans-fonts.noarch 0:2.33-6.el7
+  fontconfig.armv7hl 0:2.13.0-4.3.el7
+  fontpackages-filesystem.noarch 0:1.44-8.el7
+  freetype.armv7hl 0:2.8-12.el7_6.1
+  giflib.armv7hl 0:4.1.6-9.el7
+  java-11-openjdk.armv7hl 1:11.0.3.7-0.el7_6
+  java-11-openjdk-headless.armv7hl 1:11.0.3.7-0.el7_6
+  javapackages-tools.noarch 0:3.4.1-11.el7
+  libICE.armv7hl 0:1.0.9-9.el7
+  libSM.armv7hl 0:1.2.2-2.el7
+  libX11.armv7hl 0:1.6.5-2.el7
+  libX11-common.noarch 0:1.6.5-2.el7
+  libXau.armv7hl 0:1.0.8-2.1.el7
+  libXext.armv7hl 0:1.3.3-3.el7
+  libXi.armv7hl 0:1.7.9-1.el7
+  libXrender.armv7hl 0:0.9.10-1.el7
+  libXtst.armv7hl 0:1.2.3-1.el7
+  libfontenc.armv7hl 0:1.1.3-3.el7
+  libjpeg-turbo.armv7hl 0:1.2.90-6.el7
+  libpng.armv7hl 2:1.5.13-7.el7
+  libxcb.armv7hl 0:1.13-1.el7
+  libxslt.armv7hl 0:1.1.28-5.el7
+  lksctp-tools.armv7hl 0:1.0.17-2.el7
+  python-javapackages.noarch 0:3.4.1-11.el7
+  python-lxml.armv7hl 0:3.2.1-4.el7
+  ttmkfdir.armv7hl 0:3.0.9-42.el7
+  tzdata-java.noarch 0:2019a-1.el7
+  xorg-x11-font-utils.armv7hl 1:7.5-21.el7
+  xorg-x11-fonts-Type1.noarch 0:7.5-9.el7
+
+Complete!
+Loaded plugins: fastestmirror, ovl
+Cleaning repos: base centos-kernel extras updates
+Cleaning up list of fastest mirrors
+Removing intermediate container e808f8285d27
+ ---> 3b2ce9272068
+Step 3/20 : RUN groupadd --gid 1000 logstash &&     adduser --uid 1000 --gid 1000       --home-dir /usr/share/logstash --no-create-home       logstash
+ ---> Running in 7ecd7aafcfd6
+Removing intermediate container 7ecd7aafcfd6
+ ---> 5a03e67448db
+Step 4/20 : RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-6.8.1.tar.gz |     tar zxf - -C /usr/share &&     mv /usr/share/logstash-6.8.1 /usr/share/logstash &&     chown --recursive logstash:logstash /usr/share/logstash/ &&     chown -R logstash:root /usr/share/logstash &&     chmod -R g=u /usr/share/logstash &&     find /usr/share/logstash -type d -exec chmod g+s {} \; &&     ln -s /usr/share/logstash /opt/logstash
+ ---> Running in af60ba542146
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  164M  100  164M    0     0   937k      0  0:02:59  0:02:59 --:--:-- 6681k
+Removing intermediate container af60ba542146
+ ---> 2a97bf62d599
+Step 5/20 : WORKDIR /usr/share/logstash
+ ---> Running in 06f29e3ac97c
+Removing intermediate container 06f29e3ac97c
+ ---> b881e937347a
+Step 6/20 : ENV ELASTIC_CONTAINER true
+ ---> Running in ad16f6639ffb
+Removing intermediate container ad16f6639ffb
+ ---> f1725d69e695
+Step 7/20 : ENV PATH=/usr/share/logstash/bin:$PATH
+ ---> Running in 70033487a39d
+Removing intermediate container 70033487a39d
+ ---> 804aa351924b
+Step 8/20 : ADD config/pipelines.yml config/pipelines.yml
+ ---> 84c7d93ef7ee
+Step 9/20 : ADD config/logstash-full.yml config/logstash.yml
+ ---> 13ea1313f107
+Step 10/20 : ADD config/log4j2.properties config/
+ ---> 9a70bf58e50d
+Step 11/20 : ADD pipeline/default.conf pipeline/logstash.conf
+ ---> 4a78632db595
+Step 12/20 : RUN chown --recursive logstash:root config/ pipeline/
+ ---> Running in e9f42fee9c77
+Removing intermediate container e9f42fee9c77
+ ---> d4177803463b
+Step 13/20 : ENV LANG='en_US.UTF-8' LC_ALL='en_US.UTF-8'
+ ---> Running in 87cb45d4b53e
+Removing intermediate container 87cb45d4b53e
+ ---> afaba9b17350
+Step 14/20 : ADD bin/docker-entrypoint /usr/local/bin/
+ ---> cab85a1c9172
+Step 15/20 : RUN chmod 0755 /usr/local/bin/docker-entrypoint
+ ---> Running in 3c77bec55969
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+Removing intermediate container 3c77bec55969
+ ---> 3a7551535b2d
+Step 16/20 : USER 1000
+ ---> Running in 0f67b69ea8d5
+Removing intermediate container 0f67b69ea8d5
+ ---> 9af08398b923
+Step 17/20 : ADD env2yaml/env2yaml /usr/local/bin/
+ ---> 57577dd869f9
+Step 18/20 : EXPOSE 9600 5044
+ ---> Running in 9e81faccf5da
+Removing intermediate container 9e81faccf5da
+ ---> 90965c3ef145
+Step 19/20 : LABEL org.label-schema.schema-version="1.0"   org.label-schema.vendor="Elastic"   org.label-schema.name="logstash"   org.label-schema.version="7.2.0"   org.label-schema.url="https://www.elastic.co/products/logstash"   org.label-schema.vcs-url="https://github.com/elastic/logstash" license="Elastic License"
+ ---> Running in daca00481785
+Removing intermediate container daca00481785
+ ---> e26bbb0f1b1f
+Step 20/20 : ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]
+ ---> Running in 5f81cf8cdfbc
+Removing intermediate container 5f81cf8cdfbc
+ ---> 00028cbb4462
+[Warning] One or more build-args [ELK_VERSION] were not consumed
+Successfully built 00028cbb4462
+Successfully tagged iothasselk_logstash:latest
+Building kibana
+Step 1/22 : FROM centos:7 AS prep_files
+ ---> 8c52f2d0416f
+Step 2/22 : RUN cd /opt && curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/kibana/kibana-6.8.1.tar.gz && cd -
+ ---> Running in b0943ad20330
+/
+Removing intermediate container b0943ad20330
+ ---> 9706f0727c9a
+Step 3/22 : RUN mkdir /usr/share/kibana
+ ---> Running in f4708ae93acb
+Removing intermediate container f4708ae93acb
+ ---> 59eeba5f0f30
+Step 4/22 : WORKDIR /usr/share/kibana
+ ---> Running in 597c20e82d1d
+Removing intermediate container 597c20e82d1d
+ ---> 880b94c0f7b9
+Step 5/22 : RUN tar --strip-components=1 -zxf /opt/kibana-6.8.1.tar.gz
+ ---> Running in 5316236e23cd
+
+gzip: stdin: not in gzip format
+tar: Child returned status 1
+tar: Error is not recoverable: exiting now
+ERROR: Service 'kibana' failed to build: The command '/bin/sh -c tar --strip-components=1 -zxf /opt/kibana-6.8.1.tar.gz' returned a non-zero code: 2
+pi@hassbian:~/IoT.Hass.Elk $
+
+-----------------
+... pegando direto imagem do kibana gera "exec format error"
+
+Step 18/20 : EXPOSE 9600 5044
+ ---> Using cache
+ ---> 90965c3ef145
+Step 19/20 : LABEL org.label-schema.schema-version="1.0"   org.label-schema.vendor="Elastic"   org.label-schema.name="logstash"   org.label-schema.version="6.8.1"   org.label-schema.url="https://www.elastic.co/products/logstash"   org.label-schema.vcs-url="https://github.com/elastic/logstash" license="Elastic License"
+ ---> Running in a45d7aaa1c5b
+Removing intermediate container a45d7aaa1c5b
+ ---> d85691c28c11
+Step 20/20 : ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]
+ ---> Running in 7f0f731ee55c
+Removing intermediate container 7f0f731ee55c
+ ---> 198186e0b3c7
+[Warning] One or more build-args [ELK_VERSION] were not consumed
+Successfully built 198186e0b3c7
+Successfully tagged iothasselk_logstash:latest
+Pulling kibana (docker.elastic.co/kibana/kibana:6.8.1)...
+6.8.1: Pulling from kibana/kibana
+48914619bcd3: Pull complete
+6ba74e058204: Pull complete
+82650f51a90e: Pull complete
+412872540b65: Pull complete
+0a36e0e61194: Pull complete
+6619818d9edd: Pull complete
+5a7fb0e726f2: Pull complete
+e8b50a507459: Pull complete
+Creating iothasselk_elasticsearch_1 ... done
+Status: Downloaded newer image for docker.elastic.co/kibana/kibana:6.8.1
+Creating iothasselk_elasticsearch_1 ...
+Creating iothasselk_logstash_1      ... done
+Creating iothasselk_kibana_1        ... done
+Attaching to iothasselk_elasticsearch_1, iothasselk_kibana_1, iothasselk_logstash_1
+elasticsearch_1  | /usr/share/elasticsearch/bin/elasticsearch-env: line 43: which: command not found
+elasticsearch_1  | warning: Falling back to java on path. This behavior is deprecated. Specify JAVA_HOME
+elasticsearch_1  | could not find java; set JAVA_HOME
+kibana_1         | standard_init_linux.go:211: exec user process caused "exec format error"
+iothasselk_elasticsearch_1 exited with code 1
+logstash_1       | /bin/bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+logstash_1       | /usr/local/bin/docker-entrypoint: line 7: /usr/local/bin/env2yaml: Permission denied
+iothasselk_kibana_1 exited with code 1
+iothasselk_logstash_1 exited with code 1
+pi@hassbian:~/IoT.Hass.Elk $
+
+--------------------
+ls /usr/share/elasticsearch
+--------------------
+
+Step 18/24 : RUN ls /usr/share/elasticsearch/*
+ ---> Running in cf8368bcbfdd
+/usr/share/elasticsearch/LICENSE.txt
+/usr/share/elasticsearch/NOTICE.txt
+/usr/share/elasticsearch/README.textile
+
+/usr/share/elasticsearch/bin:
+elasticsearch
+elasticsearch-certgen
+elasticsearch-certgen.bat
+elasticsearch-certutil
+elasticsearch-certutil.bat
+elasticsearch-cli
+elasticsearch-cli.bat
+elasticsearch-croneval
+elasticsearch-croneval.bat
+elasticsearch-env
+elasticsearch-env.bat
+elasticsearch-enve
+elasticsearch-keystore
+elasticsearch-keystore.bat
+elasticsearch-migrate
+elasticsearch-migrate.bat
+elasticsearch-plugin
+elasticsearch-plugin.bat
+elasticsearch-saml-metadata
+elasticsearch-saml-metadata.bat
+elasticsearch-service-mgr.exe
+elasticsearch-service-x64.exe
+elasticsearch-service.bat
+elasticsearch-setup-passwords
+elasticsearch-setup-passwords.bat
+elasticsearch-shard
+elasticsearch-shard.bat
+elasticsearch-sql-cli
+elasticsearch-sql-cli-6.8.1.jar
+elasticsearch-sql-cli.bat
+elasticsearch-syskeygen
+elasticsearch-syskeygen.bat
+elasticsearch-translog
+elasticsearch-translog.bat
+elasticsearch-users
+elasticsearch-users.bat
+elasticsearch.bat
+x-pack
+x-pack-env
+x-pack-env.bat
+x-pack-security-env
+x-pack-security-env.bat
+x-pack-watcher-env
+x-pack-watcher-env.bat
+
+/usr/share/elasticsearch/config:
+elasticsearch.yml
+jvm.options
+log4j2.properties
+role_mapping.yml
+roles.yml
+users
+users_roles
+
+/usr/share/elasticsearch/data:
+
+/usr/share/elasticsearch/lib:
+HdrHistogram-2.1.9.jar
+elasticsearch-6.8.1.jar
+elasticsearch-cli-6.8.1.jar
+elasticsearch-core-6.8.1.jar
+elasticsearch-launchers-6.8.1.jar
+elasticsearch-secure-sm-6.8.1.jar
+elasticsearch-x-content-6.8.1.jar
+hppc-0.7.1.jar
+jackson-core-2.8.11.jar
+jackson-dataformat-cbor-2.8.11.jar
+jackson-dataformat-smile-2.8.11.jar
+jackson-dataformat-yaml-2.8.11.jar
+java-version-checker-6.8.1.jar
+jna-4.5.1.jar
+joda-time-2.10.1.jar
+jopt-simple-5.0.2.jar
+jts-core-1.15.0.jar
+log4j-1.2-api-2.11.1.jar
+log4j-api-2.11.1.jar
+log4j-core-2.11.1.jar
+lucene-analyzers-common-7.7.0.jar
+lucene-backward-codecs-7.7.0.jar
+lucene-core-7.7.0.jar
+lucene-grouping-7.7.0.jar
+lucene-highlighter-7.7.0.jar
+lucene-join-7.7.0.jar
+lucene-memory-7.7.0.jar
+lucene-misc-7.7.0.jar
+lucene-queries-7.7.0.jar
+lucene-queryparser-7.7.0.jar
+lucene-sandbox-7.7.0.jar
+lucene-spatial-7.7.0.jar
+lucene-spatial-extras-7.7.0.jar
+lucene-spatial3d-7.7.0.jar
+lucene-suggest-7.7.0.jar
+plugin-classloader-6.8.1.jar
+snakeyaml-1.17.jar
+spatial4j-0.7.jar
+t-digest-3.2.jar
+tools
+
+/usr/share/elasticsearch/logs:
+
+/usr/share/elasticsearch/modules:
+aggs-matrix-stats
+analysis-common
+ingest-common
+ingest-geoip
+ingest-user-agent
+lang-expression
+lang-mustache
+lang-painless
+mapper-extras
+parent-join
+percolator
+rank-eval
+reindex
+repository-url
+transport-netty4
+tribe
+x-pack-ccr
+x-pack-core
+x-pack-deprecation
+x-pack-graph
+x-pack-ilm
+x-pack-logstash
+x-pack-ml
+x-pack-monitoring
+x-pack-rollup
+x-pack-security
+x-pack-sql
+x-pack-upgrade
+x-pack-watcher
+
+/usr/share/elasticsearch/plugins:
+Removing intermediate container cf8368bcbfdd
+
+---------------
+/usr/share/elasticsearch/bin/elasticsearch-env
+---------------
+
+Step 19/26 : RUN cat /usr/share/elasticsearch/bin/elasticsearch-env
+ ---> Running in b93b13e41309
+#!/bin/bash
+
+set -e -o pipefail
+
+CDPATH=""
+
+SCRIPT="$0"
+
+# SCRIPT might be an arbitrarily deep series of symbolic links; loop until we
+# have the concrete path
+while [ -h "$SCRIPT" ] ; do
+  ls=`ls -ld "$SCRIPT"`
+  # Drop everything prior to ->
+  link=`expr "$ls" : '.*-> \(.*\)$'`
+  if expr "$link" : '/.*' > /dev/null; then
+    SCRIPT="$link"
+  else
+    SCRIPT=`dirname "$SCRIPT"`/"$link"
+  fi
+done
+
+# determine Elasticsearch home; to do this, we strip from the path until we find
+# bin, and then strip bin (there is an assumption here that there is no nested
+# directory under bin also named bin)
+ES_HOME=`dirname "$SCRIPT"`
+
+# now make ES_HOME absolute
+ES_HOME=`cd "$ES_HOME"; pwd`
+
+while [ "`basename "$ES_HOME"`" != "bin" ]; do
+  ES_HOME=`dirname "$ES_HOME"`
+done
+ES_HOME=`dirname "$ES_HOME"`
+
+# now set the classpath
+ES_CLASSPATH="$ES_HOME/lib/*"
+
+# now set the path to java
+if [ -x "$JAVA_HOME/bin/java" ]; then
+  JAVA="$JAVA_HOME/bin/java"
+else
+  set +e
+  JAVA=`which java`
+  echo "warning: Falling back to java on path. This behavior is deprecated. Specify JAVA_HOME"
+  set -e
+fi
+
+if [ ! -x "$JAVA" ]; then
+  echo "could not find java; set JAVA_HOME" >&2
+  exit 1
+fi
+
+# do not let JAVA_TOOL_OPTIONS slip in (as the JVM does by default)
+if [ ! -z "$JAVA_TOOL_OPTIONS" ]; then
+  echo "warning: ignoring JAVA_TOOL_OPTIONS=$JAVA_TOOL_OPTIONS"
+  unset JAVA_TOOL_OPTIONS
+fi
+
+# JAVA_OPTS is not a built-in JVM mechanism but some people think it is so we
+# warn them that we are not observing the value of $JAVA_OPTS
+if [ ! -z "$JAVA_OPTS" ]; then
+  echo -n "warning: ignoring JAVA_OPTS=$JAVA_OPTS; "
+  echo "pass JVM parameters via ES_JAVA_OPTS"
+fi
+
+# check the Java version
+"$JAVA" -cp "$ES_CLASSPATH" org.elasticsearch.tools.java_version_checker.JavaVersionChecker
+
+export HOSTNAME=$HOSTNAME
+
+if [ -z "$ES_PATH_CONF" ]; then ES_PATH_CONF="$ES_HOME"/config; fi
+
+if [ -z "$ES_PATH_CONF" ]; then
+  echo "ES_PATH_CONF must be set to the configuration path"
+  exit 1
+fi
+
+# now make ES_PATH_CONF absolute
+ES_PATH_CONF=`cd "$ES_PATH_CONF"; pwd`
+
+ES_DISTRIBUTION_FLAVOR=default
+ES_DISTRIBUTION_TYPE=docker
+
+if [ -z "$ES_TMPDIR" ]; then
+  ES_TMPDIR=`"$JAVA" -cp "$ES_CLASSPATH" org.elasticsearch.tools.launchers.TempDirectory`
+fi
+Removing intermediate container b93b13e41309
+ ---> 352faae5ac78
+Step 20/26 : RUN cat /usr/share/elasticsearch/bin/elasticsearch-env.bat
+ ---> Running in 15765b6551d3
+set SCRIPT=%0
+
+rem determine Elasticsearch home; to do this, we strip from the path until we
+rem find bin, and then strip bin (there is an assumption here that there is no
+rem nested directory under bin also named bin)
+for %%I in (%SCRIPT%) do set ES_HOME=%%~dpI
+
+:es_home_loop
+for %%I in ("%ES_HOME:~1,-1%") do set DIRNAME=%%~nxI
+if not "%DIRNAME%" == "bin" (
+  for %%I in ("%ES_HOME%..") do set ES_HOME=%%~dpfI
+  goto es_home_loop
+)
+for %%I in ("%ES_HOME%..") do set ES_HOME=%%~dpfI
+
+rem now set the classpath
+set ES_CLASSPATH=!ES_HOME!\lib\*
+
+rem now set the path to java
+if defined JAVA_HOME (
+  set JAVA="%JAVA_HOME%\bin\java.exe"
+) else (
+  echo warning: Falling back to java on path. This behavior is deprecated. Specify JAVA_HOME
+  for %%I in (java.exe) do set JAVA="%%~$PATH:I"
+)
+
+if not exist %JAVA% (
+  echo could not find java; set JAVA_HOME 1>&2
+  exit /b 1
+)
+
+rem do not let JAVA_TOOL_OPTIONS slip in (as the JVM does by default)
+if defined JAVA_TOOL_OPTIONS (
+  echo warning: ignoring JAVA_TOOL_OPTIONS=%JAVA_TOOL_OPTIONS%
+  set JAVA_TOOL_OPTIONS=
+)
+
+rem JAVA_OPTS is not a built-in JVM mechanism but some people think it is so we
+rem warn them that we are not observing the value of %JAVA_OPTS%
+if defined JAVA_OPTS (
+  (echo|set /p=warning: ignoring JAVA_OPTS=%JAVA_OPTS%; )
+  echo pass JVM parameters via ES_JAVA_OPTS
+)
+
+rem check the Java version
+%JAVA% -cp "%ES_CLASSPATH%" "org.elasticsearch.tools.java_version_checker.JavaVersionChecker" || exit /b 1
+
+set HOSTNAME=%COMPUTERNAME%
+
+if not defined ES_PATH_CONF (
+  set ES_PATH_CONF=!ES_HOME!\config
+)
+
+rem now make ES_PATH_CONF absolute
+for %%I in ("%ES_PATH_CONF%..") do set ES_PATH_CONF=%%~dpfI
+
+set ES_DISTRIBUTION_FLAVOR=default
+set ES_DISTRIBUTION_TYPE=tar
+
+if not defined ES_TMPDIR (
+  for /f "tokens=* usebackq" %%a in (`CALL %JAVA% -cp "!ES_CLASSPATH!" "org.elasticsearch.tools.launchers.TempDirectory"`) do set  ES_TMPDIR=%%a
+)
+Removing intermediate container 15765b6551d3
+ ---> 15b828717d96
+
+
+ -------------------
+/usr/share/elasticsearch/bin/elasticsearch-env.bat
+---------------
+
+ Step 20/26 : RUN cat /usr/share/elasticsearch/bin/elasticsearch-env.bat
+ ---> Running in 15765b6551d3
+set SCRIPT=%0
+
+rem determine Elasticsearch home; to do this, we strip from the path until we
+rem find bin, and then strip bin (there is an assumption here that there is no
+rem nested directory under bin also named bin)
+for %%I in (%SCRIPT%) do set ES_HOME=%%~dpI
+
+:es_home_loop
+for %%I in ("%ES_HOME:~1,-1%") do set DIRNAME=%%~nxI
+if not "%DIRNAME%" == "bin" (
+  for %%I in ("%ES_HOME%..") do set ES_HOME=%%~dpfI
+  goto es_home_loop
+)
+for %%I in ("%ES_HOME%..") do set ES_HOME=%%~dpfI
+
+rem now set the classpath
+set ES_CLASSPATH=!ES_HOME!\lib\*
+
+rem now set the path to java
+if defined JAVA_HOME (
+  set JAVA="%JAVA_HOME%\bin\java.exe"
+) else (
+  echo warning: Falling back to java on path. This behavior is deprecated. Specify JAVA_HOME
+  for %%I in (java.exe) do set JAVA="%%~$PATH:I"
+)
+
+if not exist %JAVA% (
+  echo could not find java; set JAVA_HOME 1>&2
+  exit /b 1
+)
+
+rem do not let JAVA_TOOL_OPTIONS slip in (as the JVM does by default)
+if defined JAVA_TOOL_OPTIONS (
+  echo warning: ignoring JAVA_TOOL_OPTIONS=%JAVA_TOOL_OPTIONS%
+  set JAVA_TOOL_OPTIONS=
+)
+
+rem JAVA_OPTS is not a built-in JVM mechanism but some people think it is so we
+rem warn them that we are not observing the value of %JAVA_OPTS%
+if defined JAVA_OPTS (
+  (echo|set /p=warning: ignoring JAVA_OPTS=%JAVA_OPTS%; )
+  echo pass JVM parameters via ES_JAVA_OPTS
+)
+
+rem check the Java version
+%JAVA% -cp "%ES_CLASSPATH%" "org.elasticsearch.tools.java_version_checker.JavaVersionChecker" || exit /b 1
+
+set HOSTNAME=%COMPUTERNAME%
+
+if not defined ES_PATH_CONF (
+  set ES_PATH_CONF=!ES_HOME!\config
+)
+
+rem now make ES_PATH_CONF absolute
+for %%I in ("%ES_PATH_CONF%..") do set ES_PATH_CONF=%%~dpfI
+
+set ES_DISTRIBUTION_FLAVOR=default
+set ES_DISTRIBUTION_TYPE=tar
+
+if not defined ES_TMPDIR (
+  for /f "tokens=* usebackq" %%a in (`CALL %JAVA% -cp "!ES_CLASSPATH!" "org.elasticsearch.tools.launchers.TempDirectory"`) do set  ES_TMPDIR=%%a
+)
+Removing intermediate container 15765b6551d3
+ ---> 15b828717d96

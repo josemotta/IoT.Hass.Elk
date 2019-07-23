@@ -1,0 +1,412 @@
+pi@hassbian:~/IoT.Hass.Elk $ docker-compose up --build
+Building elasticsearch
+Step 1/24 : FROM centos:7 AS builder
+ ---> 8c52f2d0416f
+Step 2/24 : ENV PATH /usr/share/elasticsearch/bin:$PATH
+ ---> Using cache
+ ---> cdc52fc2dc5a
+Step 3/24 : RUN groupadd -g 1000 elasticsearch &&     adduser -u 1000 -g 1000 -d /usr/share/elasticsearch elasticsearch
+ ---> Using cache
+ ---> bb95d8b444ed
+Step 4/24 : WORKDIR /usr/share/elasticsearch
+ ---> Using cache
+ ---> 81535a2bd67f
+Step 5/24 : RUN cd /opt && curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.8.1.tar.gz && cd -
+ ---> Running in caad0168308f
+/usr/share/elasticsearch
+Removing intermediate container caad0168308f
+ ---> fe3f61165221
+Step 6/24 : RUN tar zxf /opt/elasticsearch-6.8.1.tar.gz --strip-components=1
+ ---> Running in 46bcf10768ac
+Removing intermediate container 46bcf10768ac
+ ---> 6127be486103
+Step 7/24 : RUN grep ES_DISTRIBUTION_TYPE=tar /usr/share/elasticsearch/bin/elasticsearch-env     && sed -ie 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' /usr/share/elasticsearch/bin/elasticsearch-env
+ ---> Running in 367703bf2e01
+ES_DISTRIBUTION_TYPE=tar
+Removing intermediate container 367703bf2e01
+ ---> 4124174a9d42
+Step 8/24 : RUN mkdir -p config data logs
+ ---> Running in 4db904e0b744
+Removing intermediate container 4db904e0b744
+ ---> b8e65d7ec10b
+Step 9/24 : RUN chmod 0775 config data logs
+ ---> Running in 68631d67b78a
+Removing intermediate container 68631d67b78a
+ ---> d54edd31a5c5
+Step 10/24 : COPY config/elasticsearch.yml config/log4j2.properties config/
+ ---> ac496f89cd90
+Step 11/24 : FROM centos:7
+ ---> 8c52f2d0416f
+Step 12/24 : ENV ELASTIC_CONTAINER true
+ ---> Running in 3adb9747f0ca
+Removing intermediate container 3adb9747f0ca
+ ---> 645cfe6bf413
+Step 13/24 : RUN for iter in {1..10}; do yum update -y &&     yum install -y nc &&     yum clean all && exit_code=0 && break || exit_code=$? && echo "yum error: retry $iter in 10s" && sleep 10; done;     (exit $exit_code)
+ ---> Running in 1c3458a9d324
+Loaded plugins: fastestmirror, ovl
+Determining fastest mirrors
+ * base: mirror.math.princeton.edu
+ * centos-kernel: mirror.math.princeton.edu
+ * extras: mirror.facebook.net
+ * updates: mirror.math.princeton.edu
+Resolving Dependencies
+--> Running transaction check
+---> Package bind-license.noarch 32:9.9.4-72.el7 will be updated
+---> Package bind-license.noarch 32:9.9.4-74.el7_6.1 will be an update
+---> Package dbus.armv7hl 1:1.10.24-12.el7 will be updated
+---> Package dbus.armv7hl 1:1.10.24-13.el7_6 will be an update
+---> Package dbus-libs.armv7hl 1:1.10.24-12.el7 will be updated
+---> Package dbus-libs.armv7hl 1:1.10.24-13.el7_6 will be an update
+---> Package device-mapper.armv7hl 7:1.02.149-10.el7_6.2 will be updated
+---> Package device-mapper.armv7hl 7:1.02.149-10.el7_6.8 will be an update
+---> Package device-mapper-libs.armv7hl 7:1.02.149-10.el7_6.2 will be updated
+---> Package device-mapper-libs.armv7hl 7:1.02.149-10.el7_6.8 will be an update
+---> Package glib2.armv7hl 0:2.56.1-2.el7 will be updated
+---> Package glib2.armv7hl 0:2.56.1-4.el7_6 will be an update
+---> Package glibc.armv7hl 0:2.17-260.el7 will be updated
+---> Package glibc.armv7hl 0:2.17-260.el7_6.6 will be an update
+---> Package glibc-common.armv7hl 0:2.17-260.el7 will be updated
+---> Package glibc-common.armv7hl 0:2.17-260.el7_6.6 will be an update
+---> Package krb5-libs.armv7hl 0:1.15.1-34.el7 will be updated
+---> Package krb5-libs.armv7hl 0:1.15.1-37.el7_6 will be an update
+---> Package libblkid.armv7hl 0:2.23.2-59.el7 will be updated
+---> Package libblkid.armv7hl 0:2.23.2-59.el7_6.1 will be an update
+---> Package libgcc.armv7hl 0:4.8.5-36.el7.0.1 will be updated
+---> Package libgcc.armv7hl 0:4.8.5-36.el7_6.2 will be an update
+---> Package libmount.armv7hl 0:2.23.2-59.el7 will be updated
+---> Package libmount.armv7hl 0:2.23.2-59.el7_6.1 will be an update
+---> Package libsmartcols.armv7hl 0:2.23.2-59.el7 will be updated
+---> Package libsmartcols.armv7hl 0:2.23.2-59.el7_6.1 will be an update
+---> Package libssh2.armv7hl 0:1.4.3-12.el7 will be updated
+---> Package libssh2.armv7hl 0:1.4.3-12.el7_6.2 will be an update
+---> Package libstdc++.armv7hl 0:4.8.5-36.el7.0.1 will be updated
+---> Package libstdc++.armv7hl 0:4.8.5-36.el7_6.2 will be an update
+---> Package libuuid.armv7hl 0:2.23.2-59.el7 will be updated
+---> Package libuuid.armv7hl 0:2.23.2-59.el7_6.1 will be an update
+---> Package nss.armv7hl 0:3.36.0-7.el7_5 will be updated
+---> Package nss.armv7hl 0:3.36.0-7.1.el7_6 will be an update
+---> Package nss-pem.armv7hl 0:1.0.3-5.el7 will be updated
+---> Package nss-pem.armv7hl 0:1.0.3-5.el7_6.1 will be an update
+---> Package nss-sysinit.armv7hl 0:3.36.0-7.el7_5 will be updated
+---> Package nss-sysinit.armv7hl 0:3.36.0-7.1.el7_6 will be an update
+---> Package nss-tools.armv7hl 0:3.36.0-7.el7_5 will be updated
+---> Package nss-tools.armv7hl 0:3.36.0-7.1.el7_6 will be an update
+---> Package nss-util.armv7hl 0:3.36.0-1.el7_5 will be updated
+---> Package nss-util.armv7hl 0:3.36.0-1.1.el7_6 will be an update
+---> Package openldap.armv7hl 0:2.4.44-20.el7 will be updated
+---> Package openldap.armv7hl 0:2.4.44-21.el7_6 will be an update
+---> Package openssl-libs.armv7hl 1:1.0.2k-16.el7 will be updated
+---> Package openssl-libs.armv7hl 1:1.0.2k-16.el7_6.1 will be an update
+---> Package python.armv7hl 0:2.7.5-76.el7 will be updated
+---> Package python.armv7hl 0:2.7.5-80.el7_6 will be an update
+---> Package python-libs.armv7hl 0:2.7.5-76.el7 will be updated
+---> Package python-libs.armv7hl 0:2.7.5-80.el7_6 will be an update
+---> Package shadow-utils.armv7hl 2:4.1.5.1-25.el7 will be updated
+---> Package shadow-utils.armv7hl 2:4.1.5.1-25.el7_6.1 will be an update
+---> Package systemd.armv7hl 0:219-62.el7 will be updated
+---> Package systemd.armv7hl 0:219-62.el7_6.7 will be an update
+---> Package systemd-libs.armv7hl 0:219-62.el7 will be updated
+---> Package systemd-libs.armv7hl 0:219-62.el7_6.7 will be an update
+---> Package tzdata.noarch 0:2018g-1.el7 will be updated
+---> Package tzdata.noarch 0:2019a-1.el7 will be an update
+---> Package util-linux.armv7hl 0:2.23.2-59.el7 will be updated
+---> Package util-linux.armv7hl 0:2.23.2-59.el7_6.1 will be an update
+---> Package vim-minimal.armv7hl 2:7.4.160-5.el7 will be updated
+---> Package vim-minimal.armv7hl 2:7.4.160-6.el7_6 will be an update
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+================================================================================
+ Package                Arch        Version                   Repository   Size
+================================================================================
+Updating:
+ bind-license           noarch      32:9.9.4-74.el7_6.1       updates      87 k
+ dbus                   armv7hl     1:1.10.24-13.el7_6        updates     230 k
+ dbus-libs              armv7hl     1:1.10.24-13.el7_6        updates     150 k
+ device-mapper          armv7hl     7:1.02.149-10.el7_6.8     updates     294 k
+ device-mapper-libs     armv7hl     7:1.02.149-10.el7_6.8     updates     316 k
+ glib2                  armv7hl     2.56.1-4.el7_6            updates     2.3 M
+ glibc                  armv7hl     2.17-260.el7_6.6          updates     3.4 M
+ glibc-common           armv7hl     2.17-260.el7_6.6          updates      11 M
+ krb5-libs              armv7hl     1.15.1-37.el7_6           updates     743 k
+ libblkid               armv7hl     2.23.2-59.el7_6.1         updates     171 k
+ libgcc                 armv7hl     4.8.5-36.el7_6.2          updates     101 k
+ libmount               armv7hl     2.23.2-59.el7_6.1         updates     171 k
+ libsmartcols           armv7hl     2.23.2-59.el7_6.1         updates     132 k
+ libssh2                armv7hl     1.4.3-12.el7_6.2          updates     126 k
+ libstdc++              armv7hl     4.8.5-36.el7_6.2          updates     270 k
+ libuuid                armv7hl     2.23.2-59.el7_6.1         updates      83 k
+ nss                    armv7hl     3.36.0-7.1.el7_6          updates     728 k
+ nss-pem                armv7hl     1.0.3-5.el7_6.1           updates      59 k
+ nss-sysinit            armv7hl     3.36.0-7.1.el7_6          updates      62 k
+ nss-tools              armv7hl     3.36.0-7.1.el7_6          updates     501 k
+ nss-util               armv7hl     3.36.0-1.1.el7_6          updates      67 k
+ openldap               armv7hl     2.4.44-21.el7_6           updates     317 k
+ openssl-libs           armv7hl     1:1.0.2k-16.el7_6.1       updates     856 k
+ python                 armv7hl     2.7.5-80.el7_6            updates      94 k
+ python-libs            armv7hl     2.7.5-80.el7_6            updates     5.5 M
+ shadow-utils           armv7hl     2:4.1.5.1-25.el7_6.1      updates     1.1 M
+ systemd                armv7hl     219-62.el7_6.7            updates     4.7 M
+ systemd-libs           armv7hl     219-62.el7_6.7            updates     374 k
+ tzdata                 noarch      2019a-1.el7               updates     494 k
+ util-linux             armv7hl     2.23.2-59.el7_6.1         updates     1.9 M
+ vim-minimal            armv7hl     2:7.4.160-6.el7_6         updates     359 k
+
+Transaction Summary
+================================================================================
+Upgrade  31 Packages
+
+Total download size: 37 M
+Downloading packages:
+Delta RPMs disabled because /usr/bin/applydeltarpm not installed.
+warning: /var/cache/yum/armhfp/7/updates/packages/bind-license-9.9.4-74.el7_6.1.noarch.rpm: Header V3 RSA/SHA256 Signature, key ID f4a80eb5: NOKEY
+Public key for bind-license-9.9.4-74.el7_6.1.noarch.rpm is not installed
+--------------------------------------------------------------------------------
+Total                                              2.2 MB/s |  37 MB  00:16
+warning: /var/cache/yum/armhfp/7/updates/packages/glibc-common-2.17-260.el7_6.6.armv7hl.rpm: Header V3 RSA/SHA256 Signature, key ID 62505fe6: NOKEY
+Retrieving key from file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+Importing GPG key 0xF4A80EB5:
+ Userid     : "CentOS-7 Key (CentOS 7 Official Signing Key) <security@centos.org>"
+ Fingerprint: 6341 ab27 53d7 8a78 a7c2 7bb1 24c6 a8a7 f4a8 0eb5
+ Package    : centos-userland-release-7-6.1810.2.el7.centos.armv7hl (@CentOS)
+ From       : /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+Retrieving key from file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-AltArch-Arm32
+Importing GPG key 0x62505FE6:
+ Userid     : "CentOS AltArch SIG - Arm32 (https://wiki.centos.org/SpecialInterestGroup/AltArch/Arm32) <security@centos.org>"
+ Fingerprint: 4d9e 39f1 499c a21d d289 77f8 cafe f11b 6250 5fe6
+ Package    : centos-userland-release-7-6.1810.2.el7.centos.armv7hl (@CentOS)
+ From       : /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-AltArch-Arm32
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Updating   : tzdata-2019a-1.el7.noarch                                   1/62
+  Updating   : 32:bind-license-9.9.4-74.el7_6.1.noarch                     2/62
+  Updating   : libgcc-4.8.5-36.el7_6.2.armv7hl                             3/62
+  Updating   : glibc-2.17-260.el7_6.6.armv7hl                              4/62
+  Updating   : glibc-common-2.17-260.el7_6.6.armv7hl                       5/62
+  Updating   : systemd-libs-219-62.el7_6.7.armv7hl                         6/62
+  Updating   : nss-util-3.36.0-1.1.el7_6.armv7hl                           7/62
+  Updating   : libuuid-2.23.2-59.el7_6.1.armv7hl                           8/62
+  Updating   : libblkid-2.23.2-59.el7_6.1.armv7hl                          9/62
+  Updating   : libmount-2.23.2-59.el7_6.1.armv7hl                         10/62
+  Updating   : 2:shadow-utils-4.1.5.1-25.el7_6.1.armv7hl                  11/62
+  Updating   : nss-sysinit-3.36.0-7.1.el7_6.armv7hl                       12/62
+  Updating   : nss-pem-1.0.3-5.el7_6.1.armv7hl                            13/62
+  Updating   : nss-3.36.0-7.1.el7_6.armv7hl                               14/62
+  Updating   : nss-tools-3.36.0-7.1.el7_6.armv7hl                         15/62
+  Updating   : 1:dbus-libs-1.10.24-13.el7_6.armv7hl                       16/62
+  Updating   : systemd-219-62.el7_6.7.armv7hl                             17/62
+Failed to get D-Bus connection: Operation not permitted
+  Updating   : 1:dbus-1.10.24-13.el7_6.armv7hl                            18/62
+  Updating   : krb5-libs-1.15.1-37.el7_6.armv7hl                          19/62
+  Updating   : 1:openssl-libs-1.0.2k-16.el7_6.1.armv7hl                   20/62
+  Updating   : python-libs-2.7.5-80.el7_6.armv7hl                         21/62
+  Updating   : libsmartcols-2.23.2-59.el7_6.1.armv7hl                     22/62
+  Updating   : util-linux-2.23.2-59.el7_6.1.armv7hl                       23/62
+  Updating   : 7:device-mapper-libs-1.02.149-10.el7_6.8.armv7hl           24/62
+  Updating   : 7:device-mapper-1.02.149-10.el7_6.8.armv7hl                25/62
+  Updating   : python-2.7.5-80.el7_6.armv7hl                              26/62
+  Updating   : libssh2-1.4.3-12.el7_6.2.armv7hl                           27/62
+  Updating   : openldap-2.4.44-21.el7_6.armv7hl                           28/62
+  Updating   : glib2-2.56.1-4.el7_6.armv7hl                               29/62
+  Updating   : libstdc++-4.8.5-36.el7_6.2.armv7hl                         30/62
+  Updating   : 2:vim-minimal-7.4.160-6.el7_6.armv7hl                      31/62
+  Cleanup    : openldap-2.4.44-20.el7.armv7hl                             32/62
+  Cleanup    : nss-tools-3.36.0-7.el7_5.armv7hl                           33/62
+  Cleanup    : nss-pem-1.0.3-5.el7.armv7hl                                34/62
+  Cleanup    : nss-3.36.0-7.el7_5.armv7hl                                 35/62
+  Cleanup    : nss-sysinit-3.36.0-7.el7_5.armv7hl                         36/62
+  Cleanup    : 7:device-mapper-1.02.149-10.el7_6.2.armv7hl                37/62
+  Cleanup    : 7:device-mapper-libs-1.02.149-10.el7_6.2.armv7hl           38/62
+  Cleanup    : 1:dbus-1.10.24-12.el7.armv7hl                              39/62
+  Cleanup    : systemd-219-62.el7.armv7hl                                 40/62
+  Cleanup    : util-linux-2.23.2-59.el7.armv7hl                           41/62
+  Cleanup    : python-2.7.5-76.el7.armv7hl                                42/62
+  Cleanup    : python-libs-2.7.5-76.el7.armv7hl                           43/62
+  Cleanup    : 1:dbus-libs-1.10.24-12.el7.armv7hl                         44/62
+  Cleanup    : libssh2-1.4.3-12.el7.armv7hl                               45/62
+  Cleanup    : 1:openssl-libs-1.0.2k-16.el7.armv7hl                       46/62
+  Cleanup    : krb5-libs-1.15.1-34.el7.armv7hl                            47/62
+  Cleanup    : glib2-2.56.1-2.el7.armv7hl                                 48/62
+  Cleanup    : libmount-2.23.2-59.el7.armv7hl                             49/62
+  Cleanup    : libblkid-2.23.2-59.el7.armv7hl                             50/62
+  Cleanup    : libuuid-2.23.2-59.el7.armv7hl                              51/62
+  Cleanup    : systemd-libs-219-62.el7.armv7hl                            52/62
+  Cleanup    : libsmartcols-2.23.2-59.el7.armv7hl                         53/62
+  Cleanup    : 2:shadow-utils-4.1.5.1-25.el7.armv7hl                      54/62
+  Cleanup    : nss-util-3.36.0-1.el7_5.armv7hl                            55/62
+  Cleanup    : 2:vim-minimal-7.4.160-5.el7.armv7hl                        56/62
+  Cleanup    : libstdc++-4.8.5-36.el7.0.1.armv7hl                         57/62
+  Cleanup    : glibc-2.17-260.el7.armv7hl                                 58/62
+  Cleanup    : glibc-common-2.17-260.el7.armv7hl                          59/62
+  Cleanup    : tzdata-2018g-1.el7.noarch                                  60/62
+  Cleanup    : libgcc-4.8.5-36.el7.0.1.armv7hl                            61/62
+  Cleanup    : 32:bind-license-9.9.4-72.el7.noarch                        62/62
+  Verifying  : glibc-common-2.17-260.el7_6.6.armv7hl                       1/62
+  Verifying  : nss-sysinit-3.36.0-7.1.el7_6.armv7hl                        2/62
+  Verifying  : krb5-libs-1.15.1-37.el7_6.armv7hl                           3/62
+  Verifying  : util-linux-2.23.2-59.el7_6.1.armv7hl                        4/62
+  Verifying  : 7:device-mapper-libs-1.02.149-10.el7_6.8.armv7hl            5/62
+  Verifying  : python-2.7.5-80.el7_6.armv7hl                               6/62
+  Verifying  : nss-tools-3.36.0-7.1.el7_6.armv7hl                          7/62
+  Verifying  : 32:bind-license-9.9.4-74.el7_6.1.noarch                     8/62
+  Verifying  : tzdata-2019a-1.el7.noarch                                   9/62
+  Verifying  : glibc-2.17-260.el7_6.6.armv7hl                             10/62
+  Verifying  : systemd-219-62.el7_6.7.armv7hl                             11/62
+  Verifying  : libblkid-2.23.2-59.el7_6.1.armv7hl                         12/62
+  Verifying  : systemd-libs-219-62.el7_6.7.armv7hl                        13/62
+  Verifying  : python-libs-2.7.5-80.el7_6.armv7hl                         14/62
+  Verifying  : libsmartcols-2.23.2-59.el7_6.1.armv7hl                     15/62
+  Verifying  : nss-util-3.36.0-1.1.el7_6.armv7hl                          16/62
+  Verifying  : 7:device-mapper-1.02.149-10.el7_6.8.armv7hl                17/62
+  Verifying  : libssh2-1.4.3-12.el7_6.2.armv7hl                           18/62
+  Verifying  : libuuid-2.23.2-59.el7_6.1.armv7hl                          19/62
+  Verifying  : nss-pem-1.0.3-5.el7_6.1.armv7hl                            20/62
+  Verifying  : libstdc++-4.8.5-36.el7_6.2.armv7hl                         21/62
+  Verifying  : 1:openssl-libs-1.0.2k-16.el7_6.1.armv7hl                   22/62
+  Verifying  : libgcc-4.8.5-36.el7_6.2.armv7hl                            23/62
+  Verifying  : openldap-2.4.44-21.el7_6.armv7hl                           24/62
+  Verifying  : nss-3.36.0-7.1.el7_6.armv7hl                               25/62
+  Verifying  : 2:shadow-utils-4.1.5.1-25.el7_6.1.armv7hl                  26/62
+  Verifying  : 2:vim-minimal-7.4.160-6.el7_6.armv7hl                      27/62
+  Verifying  : libmount-2.23.2-59.el7_6.1.armv7hl                         28/62
+  Verifying  : 1:dbus-1.10.24-13.el7_6.armv7hl                            29/62
+  Verifying  : 1:dbus-libs-1.10.24-13.el7_6.armv7hl                       30/62
+  Verifying  : glib2-2.56.1-4.el7_6.armv7hl                               31/62
+  Verifying  : 7:device-mapper-1.02.149-10.el7_6.2.armv7hl                32/62
+  Verifying  : libstdc++-4.8.5-36.el7.0.1.armv7hl                         33/62
+  Verifying  : 1:dbus-1.10.24-12.el7.armv7hl                              34/62
+  Verifying  : nss-tools-3.36.0-7.el7_5.armv7hl                           35/62
+  Verifying  : util-linux-2.23.2-59.el7.armv7hl                           36/62
+  Verifying  : python-2.7.5-76.el7.armv7hl                                37/62
+  Verifying  : libblkid-2.23.2-59.el7.armv7hl                             38/62
+  Verifying  : glibc-2.17-260.el7.armv7hl                                 39/62
+  Verifying  : libgcc-4.8.5-36.el7.0.1.armv7hl                            40/62
+  Verifying  : systemd-219-62.el7.armv7hl                                 41/62
+  Verifying  : nss-util-3.36.0-1.el7_5.armv7hl                            42/62
+  Verifying  : libsmartcols-2.23.2-59.el7.armv7hl                         43/62
+  Verifying  : nss-pem-1.0.3-5.el7.armv7hl                                44/62
+  Verifying  : glibc-common-2.17-260.el7.armv7hl                          45/62
+  Verifying  : nss-3.36.0-7.el7_5.armv7hl                                 46/62
+  Verifying  : openldap-2.4.44-20.el7.armv7hl                             47/62
+  Verifying  : python-libs-2.7.5-76.el7.armv7hl                           48/62
+  Verifying  : 1:dbus-libs-1.10.24-12.el7.armv7hl                         49/62
+  Verifying  : 1:openssl-libs-1.0.2k-16.el7.armv7hl                       50/62
+  Verifying  : krb5-libs-1.15.1-34.el7.armv7hl                            51/62
+  Verifying  : 2:shadow-utils-4.1.5.1-25.el7.armv7hl                      52/62
+  Verifying  : 7:device-mapper-libs-1.02.149-10.el7_6.2.armv7hl           53/62
+  Verifying  : libssh2-1.4.3-12.el7.armv7hl                               54/62
+  Verifying  : glib2-2.56.1-2.el7.armv7hl                                 55/62
+  Verifying  : 32:bind-license-9.9.4-72.el7.noarch                        56/62
+  Verifying  : systemd-libs-219-62.el7.armv7hl                            57/62
+  Verifying  : tzdata-2018g-1.el7.noarch                                  58/62
+  Verifying  : libmount-2.23.2-59.el7.armv7hl                             59/62
+  Verifying  : 2:vim-minimal-7.4.160-5.el7.armv7hl                        60/62
+  Verifying  : libuuid-2.23.2-59.el7.armv7hl                              61/62
+  Verifying  : nss-sysinit-3.36.0-7.el7_5.armv7hl                         62/62
+
+Updated:
+  bind-license.noarch 32:9.9.4-74.el7_6.1
+  dbus.armv7hl 1:1.10.24-13.el7_6
+  dbus-libs.armv7hl 1:1.10.24-13.el7_6
+  device-mapper.armv7hl 7:1.02.149-10.el7_6.8
+  device-mapper-libs.armv7hl 7:1.02.149-10.el7_6.8
+  glib2.armv7hl 0:2.56.1-4.el7_6
+  glibc.armv7hl 0:2.17-260.el7_6.6
+  glibc-common.armv7hl 0:2.17-260.el7_6.6
+  krb5-libs.armv7hl 0:1.15.1-37.el7_6
+  libblkid.armv7hl 0:2.23.2-59.el7_6.1
+  libgcc.armv7hl 0:4.8.5-36.el7_6.2
+  libmount.armv7hl 0:2.23.2-59.el7_6.1
+  libsmartcols.armv7hl 0:2.23.2-59.el7_6.1
+  libssh2.armv7hl 0:1.4.3-12.el7_6.2
+  libstdc++.armv7hl 0:4.8.5-36.el7_6.2
+  libuuid.armv7hl 0:2.23.2-59.el7_6.1
+  nss.armv7hl 0:3.36.0-7.1.el7_6
+  nss-pem.armv7hl 0:1.0.3-5.el7_6.1
+  nss-sysinit.armv7hl 0:3.36.0-7.1.el7_6
+  nss-tools.armv7hl 0:3.36.0-7.1.el7_6
+  nss-util.armv7hl 0:3.36.0-1.1.el7_6
+  openldap.armv7hl 0:2.4.44-21.el7_6
+  openssl-libs.armv7hl 1:1.0.2k-16.el7_6.1
+  python.armv7hl 0:2.7.5-80.el7_6
+  python-libs.armv7hl 0:2.7.5-80.el7_6
+  shadow-utils.armv7hl 2:4.1.5.1-25.el7_6.1
+  systemd.armv7hl 0:219-62.el7_6.7
+  systemd-libs.armv7hl 0:219-62.el7_6.7
+  tzdata.noarch 0:2019a-1.el7
+  util-linux.armv7hl 0:2.23.2-59.el7_6.1
+  vim-minimal.armv7hl 2:7.4.160-6.el7_6
+
+Complete!
+Loaded plugins: fastestmirror, ovl
+Loading mirror speeds from cached hostfile
+ * base: mirror.math.princeton.edu
+ * centos-kernel: mirror.math.princeton.edu
+ * extras: mirror.facebook.net
+ * updates: mirror.math.princeton.edu
+Resolving Dependencies
+--> Running transaction check
+---> Package nmap-ncat.armv7hl 2:6.40-16.el7 will be installed
+--> Processing Dependency: libpcap.so.1 for package: 2:nmap-ncat-6.40-16.el7.armv7hl
+--> Running transaction check
+---> Package libpcap.armv7hl 14:1.5.3-11.el7 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+================================================================================
+ Package           Arch            Version                   Repository    Size
+================================================================================
+Installing:
+ nmap-ncat         armv7hl         2:6.40-16.el7             base         180 k
+Installing for dependencies:
+ libpcap           armv7hl         14:1.5.3-11.el7           base         131 k
+
+Transaction Summary
+================================================================================
+Install  1 Package (+1 Dependent package)
+
+Total download size: 311 k
+Installed size: 641 k
+Downloading packages:
+--------------------------------------------------------------------------------
+Total                                               27 kB/s | 311 kB  00:11
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : 14:libpcap-1.5.3-11.el7.armv7hl                              1/2
+  Installing : 2:nmap-ncat-6.40-16.el7.armv7hl                              2/2
+  Verifying  : 2:nmap-ncat-6.40-16.el7.armv7hl                              1/2
+  Verifying  : 14:libpcap-1.5.3-11.el7.armv7hl                              2/2
+
+Installed:
+  nmap-ncat.armv7hl 2:6.40-16.el7
+
+Dependency Installed:
+  libpcap.armv7hl 14:1.5.3-11.el7
+
+Complete!
+Loaded plugins: fastestmirror, ovl
+Cleaning repos: base centos-kernel extras updates
+Cleaning up list of fastest mirrors
+Removing intermediate container 1c3458a9d324
+ ---> 258883139b62
+Step 14/24 : RUN groupadd -g 1000 elasticsearch &&     adduser -u 1000 -g 1000 -G 0 -d /usr/share/elasticsearch elasticsearch &&     chmod 0775 /usr/share/elasticsearch &&     chgrp 0 /usr/share/elasticsearch
+ ---> Running in 3ab8171049fb
+Removing intermediate container 3ab8171049fb
+ ---> 7a3c19829110
+Step 15/24 : WORKDIR /usr/share/elasticsearch
+ ---> Running in 3b11e2397579
+Removing intermediate container 3b11e2397579
+ ---> 7c34db33eb02
+Step 16/24 : COPY --from=builder --chown=1000:0 /usr/share/elasticsearch /usr/share/elasticsearch
+ ---> 04ff871fb2ac
+Step 17/24 : RUN ln -sf /etc/pki/ca-trust/extracted/java/cacerts /usr/share/elasticsearch/jdk/lib/security/cacerts
+ ---> Running in a9c9c5592580
+ln: failed to create symbolic link '/usr/share/elasticsearch/jdk/lib/security/cacerts': No such file or directory
+ERROR: Service 'elasticsearch' failed to build: The command '/bin/sh -c ln -sf /etc/pki/ca-trust/extracted/java/cacerts /usr/share/elasticsearch/jdk/lib/security/cacerts' returned a non-zero code: 1
+pi@hassbian:~
