@@ -1145,3 +1145,14 @@ if not defined ES_TMPDIR (
 )
 Removing intermediate container 15765b6551d3
  ---> 15b828717d96
+
+ ----------------
+ java at elasticsearch
+ ----------------
+
+ Step 18/24 : RUN java -version
+ ---> Running in 12a6e227b768
+openjdk version "11.0.3" 2019-04-16 LTS
+OpenJDK Runtime Environment 18.9 (build 11.0.3+7-LTS)
+OpenJDK Server VM 18.9 (build 11.0.3+7-LTS, mixed mode, sharing)
+Removing intermediate container 12a6e227b768
