@@ -3,6 +3,7 @@ version: '2'
 services:
 
   elasticsearch:
+    image: josemottalopes/iothasselk_elasticsearch
     build:
       context: elasticsearch/
       args:
