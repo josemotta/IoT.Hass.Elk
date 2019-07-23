@@ -40,7 +40,7 @@ FROM centos:7
 ENV ELASTIC_CONTAINER true
 
 RUN for iter in {1..10}; do yum update -y && \
-    yum install -y nc && \
+    yum install -y nc java-11-openjdk-devel && \
     yum clean all && exit_code=0 && break || exit_code=$? && echo "yum error: retry $iter in 10s" && sleep 10; done; \
     (exit $exit_code)
 
@@ -59,7 +59,7 @@ COPY --from=builder --chown=1000:0 /usr/share/elasticsearch /usr/share/elasticse
 
 ENV PATH /usr/share/elasticsearch/bin:$PATH
 
-RUN ls /usr/share/elasticsearch
+RUN ls /usr/share/elasticsearch && echo $JAVA_HOME
 
 COPY --chown=1000:0 bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
