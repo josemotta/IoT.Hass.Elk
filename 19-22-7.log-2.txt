@@ -1156,3 +1156,50 @@ openjdk version "11.0.3" 2019-04-16 LTS
 OpenJDK Runtime Environment 18.9 (build 11.0.3+7-LTS)
 OpenJDK Server VM 18.9 (build 11.0.3+7-LTS, mixed mode, sharing)
 Removing intermediate container 12a6e227b768
+
+----------------------------------
+ok JAVA_HOME!? ----> /usr/lib/jvm/java-11-openjdk-11.0.3.7-0.el7_6.arm
+----------------------------------
+
+
+Step 17/24 : ENV PATH /usr/share/elasticsearch/bin:$PATH
+ ---> Using cache
+ ---> 163c60d5eedc
+Step 18/24 : RUN export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:/bin/java::") && echo $JAVA_HOME
+ ---> Running in 1b26456429f8
+/usr/lib/jvm/java-11-openjdk-11.0.3.7-0.el7_6.arm
+Removing intermediate container 1b26456429f8
+ ---> da7ad8450a61
+Step 19/24 : COPY --chown=1000:0 bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+ ---> 3efa3de26aad
+Step 20/24 : RUN chgrp 0 /usr/local/bin/docker-entrypoint.sh &&     chmod g=u /etc/passwd &&     chmod 0775 /usr/local/bin/docker-entrypoint.sh
+ ---> Running in 0e41859d422a
+Removing intermediate container 0e41859d422a
+ ---> 53668855fdd4
+Step 21/24 : EXPOSE 9200 9300
+ ---> Running in 049caaf14401
+Removing intermediate container 049caaf14401
+ ---> daf8b21fb753
+Step 22/24 : LABEL org.label-schema.schema-version="1.0"   org.label-schema.vendor="Elastic"   org.label-schema.name="elasticsearch"   org.label-schema.version="6.8.1"   org.label-schema.url="https://www.elastic.co/products/elasticsearch"   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch"   license="Elastic License"
+ ---> Running in e17f574ade58
+Removing intermediate container e17f574ade58
+ ---> 5beeed0c5cb0
+Step 23/24 : ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+ ---> Running in 08ca24bcbe30
+Removing intermediate container 08ca24bcbe30
+ ---> 75f50528b13f
+Step 24/24 : CMD ["eswrapper"]
+ ---> Running in 26f2976ee56e
+Removing intermediate container 26f2976ee56e
+ ---> bd5f3b2d25b7
+[Warning] One or more build-args [ELK_VERSION] were not consumed
+Successfully built bd5f3b2d25b7
+Successfully tagged iothasselk_elasticsearch:latest
+Recreating iothasselk_elasticsearch_1 ... done
+Attaching to iothasselk_elasticsearch_1
+elasticsearch_1  | Created elasticsearch keystore in /usr/share/elasticsearch/config
+elasticsearch_1  | OpenJDK Server VM warning: Option UseConcMarkSweepGC was deprecated in version 9.0 and will likely be removed in a future release.
+elasticsearch_1  | Unrecognized VM option 'UseAVX=2'
+elasticsearch_1  | Error: Could not create the Java Virtual Machine.
+elasticsearch_1  | Error: A fatal exception has occurred. Program will exit.
+iothasselk_elasticsearch_1 exited with code 1
