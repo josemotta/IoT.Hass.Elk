@@ -8,8 +8,12 @@ discovery.type: single-node
 
 ## X-Pack settings
 ## see https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-xpack.html
+##     https://www.elastic.co/guide/en/elasticsearch/reference/6.8/collecting-monitoring-data.html
 #
-xpack.license.self_generated.type: trial
 xpack.security.enabled: true
+xpack.monitoring.enabled: true
 xpack.monitoring.collection.enabled: true
+xpack.monitoring.elasticsearch.collection.enabled: true
+#xpack.monitoring.collection.indices: logstash-*, index1, test2
+xpack.license.self_generated.type: trial
 xpack.ml.enabled: false
