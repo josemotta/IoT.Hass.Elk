@@ -59,7 +59,8 @@ COPY --from=builder --chown=1000:0 /usr/share/elasticsearch /usr/share/elasticse
 
 ENV PATH /usr/share/elasticsearch/bin:$PATH
 
-RUN export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:/bin/java::") && echo $JAVA_HOME
+ENV JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:/bin/java::")
+RUN echo $JAVA_HOME
 
 COPY --chown=1000:0 bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
@@ -69,6 +70,8 @@ RUN chgrp 0 /usr/local/bin/docker-entrypoint.sh && \
     chmod g=u /etc/passwd && \
     chmod 0775 /usr/local/bin/docker-entrypoint.sh && \
     chmod 0777 /usr/share/elasticsearch/logs
+
+RUN elasticsearch-plugin install analysis-icu
 
 EXPOSE 9200 9300
 
