@@ -59,9 +59,9 @@ COPY --chown=1000:0 config/elasticsearch.yml config/log4j2.properties config/jvm
 
 ENV PATH /usr/share/elasticsearch/bin:$PATH
 
-RUN export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:/bin/java::") && echo $JAVA_HOME
+#RUN export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:/bin/java::") && echo $JAVA_HOME
 
-ENV JAVA_HOME $JAVA_HOME
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-11.0.3.7-0.el7_6.arm
 
 COPY --chown=1000:0 bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
