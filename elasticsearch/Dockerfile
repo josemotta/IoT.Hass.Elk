@@ -26,8 +26,7 @@ RUN tar zxf /opt/elasticsearch-6.8.1.tar.gz --strip-components=1
 RUN grep ES_DISTRIBUTION_TYPE=tar /usr/share/elasticsearch/bin/elasticsearch-env \
     && sed -ie 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' /usr/share/elasticsearch/bin/elasticsearch-env
 RUN mkdir -p config data logs
-RUN chmod 0775 config data logs
-COPY config/elasticsearch.yml config/log4j2.properties config/jvm.options config/
+RUN chmod 0777 config data logs
 
 ################################################################################
 # Build stage 1 (the actual elasticsearch image):
@@ -51,6 +50,7 @@ RUN groupadd -g 1000 elasticsearch && \
 
 WORKDIR /usr/share/elasticsearch
 COPY --from=builder --chown=1000:0 /usr/share/elasticsearch /usr/share/elasticsearch
+COPY --chown=1000:0 config/elasticsearch.yml config/log4j2.properties config/jvm.options /usr/share/elasticsearch/config/
 
 # Replace OpenJDK's built-in CA certificate keystore with the one from the OS
 # vendor. The latter is superior in several ways.
