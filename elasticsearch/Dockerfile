@@ -61,7 +61,6 @@ ENV PATH /usr/share/elasticsearch/bin:$PATH
 
 RUN export JH=$(readlink -f "/usr/bin/java" | sed "s:/bin/java::")
 ENV JAVA_HOME $JH
-RUN echo $JAVA_HOME
 
 COPY --chown=1000:0 bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
