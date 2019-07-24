@@ -68,8 +68,7 @@ COPY --chown=1000:0 bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 # Allow ENTRYPOINT (and ES) to run even with a different user
 RUN chgrp 0 /usr/local/bin/docker-entrypoint.sh && \
     chmod g=u /etc/passwd && \
-    chmod 0775 /usr/local/bin/docker-entrypoint.sh && \
-    chmod 0777 /usr/share/elasticsearch/logs
+    chmod 0775 /usr/local/bin/docker-entrypoint.sh
 
 RUN elasticsearch-plugin install analysis-icu
 

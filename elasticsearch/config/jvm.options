@@ -90,6 +90,7 @@
 -Dlog4j2.disable.jmx=true
 
 -Djava.io.tmpdir=${ES_TMPDIR}
+-Djna.tmpdir=${ES_TMPDIR}
 
 ## heap dumps
 
