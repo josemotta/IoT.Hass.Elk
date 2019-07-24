@@ -58,7 +58,10 @@ COPY --chown=1000:0 config/elasticsearch.yml config/log4j2.properties config/jvm
 #RUN ln -sf /etc/pki/ca-trust/extracted/java/cacerts /usr/share/elasticsearch/jdk/lib/security/cacerts
 
 ENV PATH /usr/share/elasticsearch/bin:$PATH
-ENV JAVA_HOME=${(readlink -f /usr/bin/java | sed "s:/bin/java::")}
+
+RUN export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:/bin/java::") && echo $JAVA_HOME
+
+ENV JAVA_HOME=$JAVA_HOME
 
 COPY --chown=1000:0 bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
