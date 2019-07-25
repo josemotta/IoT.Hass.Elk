@@ -45,15 +45,13 @@ RUN cd /opt && \
 ENV ELASTIC_CONTAINER true
 ENV PATH=/usr/share/logstash/bin:$PATH
 
-# Rename existing and import new configuration files
+# Rename existing configuration before copies
 
-RUN cd /usr/share/logstash/config && \
-    mv jvm.options jvm.options.dist && \
-    mv log4j2.properties log4j2.properties.dist && \
-    mv logstash.yml logstash.yml.dist && \
-    mv pipelines.yml pipelines.yml.dist && \
-    cd /usr/share/logstash/pipeline && \ 
-    mv logstash.conf logstash.dist
+RUN mv -T /usr/share/logstash/config/jvm.options jvm.options.dist && \
+    mv -T /usr/share/logstash/config/log4j2.properties log4j2.properties.dist && \
+    mv -T /usr/share/logstash/config/logstash.yml logstash.yml.dist && \
+    mv -T /usr/share/logstash/config/pipelines.yml pipelines.yml.dist && \
+    mv -T /usr/share/logstash/pipeline/logstash.conf logstash.conf.dist
 
 WORKDIR /usr/share/logstash
 
