@@ -50,8 +50,7 @@ ENV PATH=/usr/share/logstash/bin:$PATH
 RUN rm /usr/share/logstash/config/jvm.options \
        /usr/share/logstash/config/log4j2.properties \
        /usr/share/logstash/config/logstash.yml \
-       /usr/share/logstash/config/pipelines.yml \
-       /usr/share/logstash/pipeline/logstash.conf
+       /usr/share/logstash/config/pipelines.yml
 
 # RUN mv -T /usr/share/logstash/config/jvm.options jvm.options.dist && \
 #     mv -T /usr/share/logstash/config/log4j2.properties log4j2.properties.dist && \
