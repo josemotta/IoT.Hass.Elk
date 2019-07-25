@@ -34,7 +34,7 @@ services:
       - "9600:9600"
     environment:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
-      ELASTIC_PASSWORD: changeme
+      #ELASTIC_PASSWORD: changeme
     restart: always
     networks:
       - elk
