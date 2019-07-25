@@ -46,7 +46,7 @@ ADD --chown=1000:0 pipeline/default.conf pipeline/logstash.conf
 RUN chown --recursive logstash:root config/ pipeline/
 
 # Ensure Logstash gets a UTF-8 locale by default.
-ENV LANG='en_US.utf8' LC_ALL='en_US.utf8'
+#ENV LANG='en_US.utf8' LC_ALL='en_US.utf8'
 
 # Place the startup wrapper script.
 ADD bin/docker-entrypoint /usr/local/bin/
