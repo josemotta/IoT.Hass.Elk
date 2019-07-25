@@ -54,7 +54,7 @@ RUN chmod 0755 /usr/local/bin/docker-entrypoint
 
 USER 1000
 
-ADD env2yaml/env2yaml /usr/local/bin/
+ADD --chown=1000:0 env2yaml/env2yaml /usr/local/bin/
 
 EXPOSE 9600 5044
 
