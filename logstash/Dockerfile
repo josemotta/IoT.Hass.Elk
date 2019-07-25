@@ -56,7 +56,7 @@ RUN rm /usr/share/logstash/config/jvm.options \
        /usr/share/logstash/config/pipelines.yml
 
 WORKDIR /usr/share/logstash
-COPY --chown=1000:0 config/logstash.yml config/jvm.options config/pipelines.yml config/log4j2.properties /usr/share/elasticsearch/config/
+COPY --chown=1000:0 config/logstash.yml config/jvm.options config/pipelines.yml config/log4j2.properties /usr/share/logstash/config/
 COPY --chown=1000:0 pipeline/default.conf pipeline/logstash.conf
 
 RUN chown --recursive logstash:logstash config/ pipeline/ && \
