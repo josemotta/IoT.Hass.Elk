@@ -6,6 +6,11 @@ FROM centos:7
 RUN yum update -y && yum install -y java-11-openjdk-devel which && \
     yum clean all
 
+# TODO: If "java-11-openjdk-devel" changes, then RUN line below and copy/paste result to be persisted!
+# Sorry, I did not succeed on automating that, since ENV is only accepting static data. (?)
+#RUN export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:/bin/java::") && echo $JAVA_HOME
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-11.0.3.7-0.el7_6.arm
+
 # Provide a non-root user to run the process.
 RUN groupadd --gid 1000 logstash && \
     adduser --uid 1000 --gid 1000 \

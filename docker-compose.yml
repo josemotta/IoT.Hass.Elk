@@ -16,26 +16,29 @@ services:
     environment:
       ES_JAVA_OPTS: "-Xmx256m -Xms256m"
       ELASTIC_PASSWORD: changeme
+    restart: always
     networks:
       - elk
 
-  # logstash:
-  #   build:
-  #     context: logstash/
-  #     args:
-  #       ELK_VERSION: $ELK_VERSION
-  #   volumes:
-  #     - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
-  #     - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
-  #   ports:
-  #     - "5000:5000"
-  #     - "9600:9600"
-  #   environment:
-  #     LS_JAVA_OPTS: "-Xmx256m -Xms256m"
-  #   networks:
-  #     - elk
-  #   depends_on:
-  #     - elasticsearch
+  logstash:
+    build:
+      context: logstash/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    ports:
+      - "5000:5000"
+      - "9600:9600"
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ELASTIC_PASSWORD: changeme
+    restart: always
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
 
   # kibana:
   #   image: docker.elastic.co/kibana/kibana:6.8.1
@@ -47,6 +50,7 @@ services:
   #     - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
   #   ports:
   #     - "5601:5601"
+  #   restart: always
   #   networks:
   #     - elk
   #   depends_on:

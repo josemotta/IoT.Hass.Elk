@@ -43,6 +43,11 @@ RUN for iter in {1..10}; do yum update -y && \
     yum clean all && exit_code=0 && break || exit_code=$? && echo "yum error: retry $iter in 10s" && sleep 10; done; \
     (exit $exit_code)
 
+# TODO: If "java-11-openjdk-devel" changes, then RUN line below and copy/paste result to be persisted!
+# Sorry, I did not succeed on automating that, since ENV is only accepting static data. (?)
+#RUN export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:/bin/java::") && echo $JAVA_HOME
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-11.0.3.7-0.el7_6.arm
+
 RUN groupadd -g 1000 elasticsearch && \
     adduser -u 1000 -g 1000 -G 0 -d /usr/share/elasticsearch elasticsearch && \
     chmod 0775 /usr/share/elasticsearch && \
@@ -58,10 +63,6 @@ COPY --chown=1000:0 config/elasticsearch.yml config/log4j2.properties config/jvm
 #RUN ln -sf /etc/pki/ca-trust/extracted/java/cacerts /usr/share/elasticsearch/jdk/lib/security/cacerts
 
 ENV PATH /usr/share/elasticsearch/bin:$PATH
-
-#RUN export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:/bin/java::") && echo $JAVA_HOME
-
-ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-11.0.3.7-0.el7_6.arm
 
 COPY --chown=1000:0 bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 

@@ -1203,3 +1203,60 @@ elasticsearch_1  | Unrecognized VM option 'UseAVX=2'
 elasticsearch_1  | Error: Could not create the Java Virtual Machine.
 elasticsearch_1  | Error: A fatal exception has occurred. Program will exit.
 iothasselk_elasticsearch_1 exited with code 1
+
+
+--------------------
+OK!
+--------------------
+Step 14/25 : WORKDIR /usr/share/elasticsearch
+ ---> Using cache
+ ---> 2e2d4f4baff9
+Step 15/25 : COPY --from=builder --chown=1000:0 /usr/share/elasticsearch /usr/share/elasticsearch
+ ---> Using cache
+ ---> 996cf0b6b5d0
+Step 16/25 : COPY --chown=1000:0 config/elasticsearch.yml config/log4j2.properties config/jvm.options /usr/share/elasticsearch/config/
+ ---> cc720b71d135
+Step 17/25 : ENV PATH /usr/share/elasticsearch/bin:$PATH
+ ---> Running in f13e6027d77e
+Removing intermediate container f13e6027d77e
+ ---> 83993dfd2bc4
+Step 18/25 : ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-11.0.3.7-0.el7_6.arm
+ ---> Running in ba9d27716d58
+Removing intermediate container ba9d27716d58
+ ---> 4b40c635403f
+Step 19/25 : COPY --chown=1000:0 bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+ ---> e5efc02cf899
+Step 20/25 : RUN chgrp 0 /usr/local/bin/docker-entrypoint.sh &&     chmod g=u /etc/passwd &&     chmod 0775 /usr/local/bin/docker-entrypoint.sh
+ ---> Running in bad8d5a2dc7f
+Removing intermediate container bad8d5a2dc7f
+ ---> 96e13b4fe5b5
+Step 21/25 : RUN elasticsearch-plugin install analysis-icu
+ ---> Running in d17fac642d26
+-> Downloading analysis-icu from elastic
+[=================================================] 100%??
+-> Installed analysis-icu
+Removing intermediate container d17fac642d26
+ ---> 9ce84251e32d
+Step 22/25 : EXPOSE 9200 9300
+ ---> Running in 5ef510f9f3b0
+Removing intermediate container 5ef510f9f3b0
+ ---> 08b500783f7b
+Step 23/25 : LABEL org.label-schema.schema-version="1.0"   org.label-schema.vendor="Elastic"   org.label-schema.name="elasticsearch"   org.label-schema.version="6.8.1"   org.label-schema.url="https://www.elastic.co/products/elasticsearch"   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch"   license="Elastic License"
+ ---> Running in 12a6c0f87786
+Removing intermediate container 12a6c0f87786
+ ---> 33718816f57a
+Step 24/25 : ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+ ---> Running in 615ac198527f
+Removing intermediate container 615ac198527f
+ ---> 5088635acab0
+Step 25/25 : CMD ["eswrapper"]
+ ---> Running in 0a8fd12c8254
+Removing intermediate container 0a8fd12c8254
+ ---> 42ee957961b5
+[Warning] One or more build-args [ELK_VERSION] were not consumed
+Successfully built 42ee957961b5
+Successfully tagged josemottalopes/iothasselk_elasticsearch:latest
+Recreating iothasselk_elasticsearch_1 ... done
+Attaching to iothasselk_elasticsearch_1
+elasticsearch_1  | Created elasticsearch keystore in /usr/share/elasticsearch/config
+elasticsearch_1  | OpenJDK Server VM warning: Option UseConcMarkSweepGC was deprecated in version 9.0 and will likely be removed in a future release.
