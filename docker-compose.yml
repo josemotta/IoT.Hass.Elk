@@ -21,6 +21,7 @@ services:
       - elk
 
   logstash:
+    image: josemottalopes/iothasselk_logstash
     build:
       context: logstash/
       args:
