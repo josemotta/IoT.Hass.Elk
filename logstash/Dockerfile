@@ -45,13 +45,19 @@ RUN cd /opt && \
 ENV ELASTIC_CONTAINER true
 ENV PATH=/usr/share/logstash/bin:$PATH
 
-# Rename existing configuration before copies
+# Remove existing configuration
 
-RUN mv -T /usr/share/logstash/config/jvm.options jvm.options.dist && \
-    mv -T /usr/share/logstash/config/log4j2.properties log4j2.properties.dist && \
-    mv -T /usr/share/logstash/config/logstash.yml logstash.yml.dist && \
-    mv -T /usr/share/logstash/config/pipelines.yml pipelines.yml.dist && \
-    mv -T /usr/share/logstash/pipeline/logstash.conf logstash.conf.dist
+RUN rm /usr/share/logstash/config/jvm.options \
+       /usr/share/logstash/config/log4j2.properties \
+       /usr/share/logstash/config/logstash.yml \
+       /usr/share/logstash/config/pipelines.yml \
+       /usr/share/logstash/pipeline/logstash.conf
+
+# RUN mv -T /usr/share/logstash/config/jvm.options jvm.options.dist && \
+#     mv -T /usr/share/logstash/config/log4j2.properties log4j2.properties.dist && \
+#     mv -T /usr/share/logstash/config/logstash.yml logstash.yml.dist && \
+#     mv -T /usr/share/logstash/config/pipelines.yml pipelines.yml.dist && \
+#     mv -T /usr/share/logstash/pipeline/logstash.conf logstash.conf.dist
 
 WORKDIR /usr/share/logstash
 
