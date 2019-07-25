@@ -20,13 +20,22 @@ RUN groupadd -g 1000 elasticsearch && \
 
 WORKDIR /usr/share/elasticsearch
 
-RUN cd /opt && curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.8.1.tar.gz && cd -
+RUN cd /opt && \
+    curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.8.1.tar.gz && \
+    cd - && \
+    tar zxf /opt/elasticsearch-6.8.1.tar.gz --strip-components=1 && \
+    grep ES_DISTRIBUTION_TYPE=tar /usr/share/elasticsearch/bin/elasticsearch-env && \
+    sed -ie 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' /usr/share/elasticsearch/bin/elasticsearch-env && \
+    mkdir -p config data logs && \
+    chmod 0777 config data logs
 
-RUN tar zxf /opt/elasticsearch-6.8.1.tar.gz --strip-components=1
-RUN grep ES_DISTRIBUTION_TYPE=tar /usr/share/elasticsearch/bin/elasticsearch-env \
-    && sed -ie 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' /usr/share/elasticsearch/bin/elasticsearch-env
-RUN mkdir -p config data logs
-RUN chmod 0777 config data logs
+# RUN cd /opt && curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.8.1.tar.gz && cd -
+
+# RUN tar zxf /opt/elasticsearch-6.8.1.tar.gz --strip-components=1
+# RUN grep ES_DISTRIBUTION_TYPE=tar /usr/share/elasticsearch/bin/elasticsearch-env \
+#     && sed -ie 's/ES_DISTRIBUTION_TYPE=tar/ES_DISTRIBUTION_TYPE=docker/' /usr/share/elasticsearch/bin/elasticsearch-env
+# RUN mkdir -p config data logs
+# RUN chmod 0777 config data logs
 
 ################################################################################
 # Build stage 1 (the actual elasticsearch image):
