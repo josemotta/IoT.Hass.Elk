@@ -9,7 +9,8 @@ xpack.monitoring.enabled: true
 xpack.monitoring.collection.enabled: true
 xpack.monitoring.elasticsearch.collection.enabled: true
 xpack.monitoring.elasticsearch.hosts: [ "http://elasticsearch:9200" ]
-xpack.monitoring.elasticsearch.url: http://localhost:9201
+xpack.monitoring.elasticsearch.url: http://localhost:9200
+#xpack.monitoring.elasticsearch.url: http://localhost:9201
 xpack.monitoring.elasticsearch.username: 
 xpack.monitoring.elasticsearch.password:
 #xpack.monitoring.collection.indices: logstash-*, index1, test2
