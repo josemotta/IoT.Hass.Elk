@@ -42,24 +42,24 @@ RUN cd /opt && \
 #     find /usr/share/logstash -type d -exec chmod g+s {} \; && \
 #     ln -s /usr/share/logstash /opt/logstash
 
-#WORKDIR /usr/share/logstash
-
 ENV ELASTIC_CONTAINER true
 ENV PATH=/usr/share/logstash/bin:$PATH
 
-# Provide a minimal configuration, so that simple invocations will provide
-# a good experience.
+# Rename existing and import new configuration files
+
+RUN cd /usr/share/logstash/config && \
+    mv jvm.options jvm.options.dist && \
+    mv log4j2.properties log4j2.properties.dist && \
+    mv logstash.yml logstash.yml.dist && \
+    mv pipelines.yml pipelines.yml.dist && \
+    cd /usr/share/logstash/pipeline && \ 
+    mv logstash.conf logstash.dist
+
+WORKDIR /usr/share/logstash
 
 COPY --chown=1000:0 config/logstash.yml config/jvm.options config/pipelines.yml config/log4j2.properties /usr/share/elasticsearch/config/
+COPY --chown=1000:0 pipeline/default.conf pipeline/logstash.conf
 
-# ADD config/pipelines.yml config/pipelines.yml
-# ADD config/logstash.yml config/logstash.yml
-# ADD config/log4j2.properties config/
-ADD --chown=1000:0 pipeline/default.conf pipeline/logstash.conf
-# ADD --chown=1000:0 config/pipelines.yml config/pipelines.yml
-# ADD --chown=1000:0 config/logstash.yml config/logstash.yml
-# ADD --chown=1000:0 config/log4j2.properties config/
-# ADD --chown=1000:0 pipeline/default.conf pipeline/logstash.conf
 RUN chown --recursive logstash:logstash config/ pipeline/ && \
     chmod 0777 config/logstash.yml
 
