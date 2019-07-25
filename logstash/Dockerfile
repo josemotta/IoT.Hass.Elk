@@ -27,7 +27,7 @@ RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-6.8.1.ta
     tar zxf - -C /usr/share && \
     mv /usr/share/logstash-6.8.1 /usr/share/logstash && \
     chown --recursive logstash:logstash /usr/share/logstash/ && \
-    chown -R logstash:root /usr/share/logstash && \
+    #chown -R logstash:root /usr/share/logstash && \
     chmod -R g=u /usr/share/logstash && \
     find /usr/share/logstash -type d -exec chmod g+s {} \; && \
     ln -s /usr/share/logstash /opt/logstash
