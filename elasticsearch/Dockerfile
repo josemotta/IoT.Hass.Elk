@@ -7,7 +7,6 @@
 ################################################################################
 # Build stage 0 `builder`:
 # Extract elasticsearch artifact
-# Install required plugins
 # Set gid=0 and make group perms==owner perms
 ################################################################################
 
@@ -40,6 +39,7 @@ RUN cd /opt && \
 ################################################################################
 # Build stage 1 (the actual elasticsearch image):
 # Copy elasticsearch from stage 0
+# Install required plugins
 # Add entrypoint
 ################################################################################
 

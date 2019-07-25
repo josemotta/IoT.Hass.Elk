@@ -12,11 +12,16 @@ RUN yum update -y && yum install -y java-11-openjdk-devel which && \
 ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-11.0.3.7-0.el7_6.arm
 
 # Provide a non-root user to run the process.
-RUN groupadd --gid 1000 logstash && \
-    adduser --uid 1000 --gid 1000 \
-      --home-dir /usr/share/logstash --no-create-home \
-      logstash
+# RUN groupadd --gid 1000 logstash && \
+#     adduser --uid 1000 --gid 1000 \
+#       --home-dir /usr/share/logstash --no-create-home \
+#       logstash
 
+RUN groupadd -g 1000 logstash && \
+    adduser -u 1000 -g 1000 -G 0 -d /usr/share/logstash logstash && \
+    chmod 0775 /usr/share/logstash && \
+    chgrp 0 /usr/share/logstash
+    
 # Add Logstash itself.
 RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-6.8.1.tar.gz | \
     tar zxf - -C /usr/share && \
@@ -52,7 +57,6 @@ USER 1000
 ADD env2yaml/env2yaml /usr/local/bin/
 
 EXPOSE 9600 5044
-
 
 LABEL org.label-schema.schema-version="1.0" \
   org.label-schema.vendor="Elastic" \
