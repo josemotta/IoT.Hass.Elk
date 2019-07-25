@@ -52,19 +52,12 @@ RUN rm /usr/share/logstash/config/jvm.options \
        /usr/share/logstash/config/logstash.yml \
        /usr/share/logstash/config/pipelines.yml
 
-# RUN mv -T /usr/share/logstash/config/jvm.options jvm.options.dist && \
-#     mv -T /usr/share/logstash/config/log4j2.properties log4j2.properties.dist && \
-#     mv -T /usr/share/logstash/config/logstash.yml logstash.yml.dist && \
-#     mv -T /usr/share/logstash/config/pipelines.yml pipelines.yml.dist && \
-#     mv -T /usr/share/logstash/pipeline/logstash.conf logstash.conf.dist
-
 WORKDIR /usr/share/logstash
-
 COPY --chown=1000:0 config/logstash.yml config/jvm.options config/pipelines.yml config/log4j2.properties /usr/share/elasticsearch/config/
 COPY --chown=1000:0 pipeline/default.conf pipeline/logstash.conf
 
-#RUN chown --recursive logstash:logstash config/ pipeline/ && \
-#    chmod 0777 config/logstash.yml
+RUN chown --recursive logstash:logstash config/ pipeline/ && \
+    chmod 0777 config/logstash.yml
 
 # Place the startup wrapper script.
 ADD bin/docker-entrypoint /usr/local/bin/
