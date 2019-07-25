@@ -18,42 +18,57 @@ ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-11.0.3.7-0.el7_6.arm
 #       logstash
 
 RUN groupadd -g 1000 logstash && \
-    adduser -u 1000 -g 1000 -G 0 -d /usr/share/logstash logstash && \
-    chmod 0777 /usr/share/logstash && \
-    chgrp 0 /usr/share/logstash
-    
-# Add Logstash itself.
-RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-6.8.1.tar.gz | \
-    tar zxf - -C /usr/share && \
-    mv /usr/share/logstash-6.8.1 /usr/share/logstash && \
-    chown --recursive logstash:logstash /usr/share/logstash/ && \
-    #chown -R logstash:root /usr/share/logstash && \
-    chmod -R g=u /usr/share/logstash && \
-    find /usr/share/logstash -type d -exec chmod g+s {} \; && \
-    ln -s /usr/share/logstash /opt/logstash
+    adduser -u 1000 -g 1000 -d /usr/share/logstash logstash
 
 WORKDIR /usr/share/logstash
+
+RUN cd /opt && \
+    curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/logstash/logstash-6.8.1.tar.gz && \
+    cd - && \
+    tar zxf /opt/logstash-6.8.1.tar.gz --strip-components=1
+
+# RUN groupadd -g 1000 logstash && \
+#     adduser -u 1000 -g 1000 -G 0 -d /usr/share/logstash logstash && \
+#     chmod 0777 /usr/share/logstash && \
+#     chgrp 0 /usr/share/logstash
+    
+# Add Logstash itself.
+# RUN curl -Lo - https://artifacts.elastic.co/downloads/logstash/logstash-6.8.1.tar.gz | \
+#     tar zxf - -C /usr/share && \
+#     mv /usr/share/logstash-6.8.1 /usr/share/logstash && \
+#     chown --recursive logstash:logstash /usr/share/logstash/ && \
+#     #chown -R logstash:root /usr/share/logstash && \
+#     chmod -R g=u /usr/share/logstash && \
+#     find /usr/share/logstash -type d -exec chmod g+s {} \; && \
+#     ln -s /usr/share/logstash /opt/logstash
+
+#WORKDIR /usr/share/logstash
 
 ENV ELASTIC_CONTAINER true
 ENV PATH=/usr/share/logstash/bin:$PATH
 
 # Provide a minimal configuration, so that simple invocations will provide
 # a good experience.
-ADD --chown=1000:0 config/pipelines.yml config/pipelines.yml
-ADD --chown=1000:0 config/logstash.yml config/logstash.yml
-ADD --chown=1000:0 config/log4j2.properties config/
+
+COPY --chown=1000:0 config/logstash.yml config/jvm.options config/pipelines.yml config/log4j2.properties /usr/share/elasticsearch/config/
+
+# ADD config/pipelines.yml config/pipelines.yml
+# ADD config/logstash.yml config/logstash.yml
+# ADD config/log4j2.properties config/
 ADD --chown=1000:0 pipeline/default.conf pipeline/logstash.conf
-RUN chown --recursive logstash:root config/ pipeline/ && \
+# ADD --chown=1000:0 config/pipelines.yml config/pipelines.yml
+# ADD --chown=1000:0 config/logstash.yml config/logstash.yml
+# ADD --chown=1000:0 config/log4j2.properties config/
+# ADD --chown=1000:0 pipeline/default.conf pipeline/logstash.conf
+RUN chown --recursive logstash:logstash config/ pipeline/ && \
     chmod 0777 config/logstash.yml
 
 # Place the startup wrapper script.
 ADD bin/docker-entrypoint /usr/local/bin/
 RUN chmod 0755 /usr/local/bin/docker-entrypoint
-
-USER 1000
-
-ADD --chown=1000:0 env2yaml/env2yaml /usr/local/bin/
-RUN chmod +x /usr/local/bin/env2yaml
+#USER 1000
+ADD env2yaml/env2yaml /usr/local/bin/
+RUN chmod 0755 /usr/local/bin/env2yaml
 
 EXPOSE 9600 5044
 
