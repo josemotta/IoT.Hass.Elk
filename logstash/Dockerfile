@@ -19,7 +19,7 @@ ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-11.0.3.7-0.el7_6.arm
 
 RUN groupadd -g 1000 logstash && \
     adduser -u 1000 -g 1000 -G 0 -d /usr/share/logstash logstash && \
-    chmod 0775 /usr/share/logstash && \
+    chmod 0777 /usr/share/logstash && \
     chgrp 0 /usr/share/logstash
     
 # Add Logstash itself.
