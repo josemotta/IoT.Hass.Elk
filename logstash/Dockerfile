@@ -21,11 +21,14 @@ RUN groupadd -g 1000 logstash && \
     adduser -u 1000 -g 1000 -d /usr/share/logstash logstash
 
 WORKDIR /usr/share/logstash
-
 RUN cd /opt && \
     curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/logstash/logstash-6.8.1.tar.gz && \
     cd - && \
-    tar zxf /opt/logstash-6.8.1.tar.gz --strip-components=1
+    tar zxf /opt/logstash-6.8.1.tar.gz --strip-components=1 && \
+    chown -R logstash:logstash /usr/share/logstash/ && \
+    chmod -R g=u /usr/share/logstash && \
+    find /usr/share/logstash -type d -exec chmod g+s {} \; && \
+    ln -s /usr/share/logstash /opt/logstash
 
 # RUN groupadd -g 1000 logstash && \
 #     adduser -u 1000 -g 1000 -G 0 -d /usr/share/logstash logstash && \
