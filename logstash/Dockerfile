@@ -63,8 +63,8 @@ WORKDIR /usr/share/logstash
 COPY --chown=1000:0 config/logstash.yml config/jvm.options config/pipelines.yml config/log4j2.properties /usr/share/elasticsearch/config/
 COPY --chown=1000:0 pipeline/default.conf pipeline/logstash.conf
 
-RUN chown --recursive logstash:logstash config/ pipeline/ && \
-    chmod 0777 config/logstash.yml
+#RUN chown --recursive logstash:logstash config/ pipeline/ && \
+#    chmod 0777 config/logstash.yml
 
 # Place the startup wrapper script.
 ADD bin/docker-entrypoint /usr/local/bin/
