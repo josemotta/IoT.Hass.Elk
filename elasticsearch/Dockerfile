@@ -14,6 +14,7 @@ FROM centos:7 AS builder
 
 ENV PATH /usr/share/elasticsearch/bin:$PATH
 
+# Provide a non-root user to run the process.
 RUN groupadd -g 1000 elasticsearch && \
     adduser -u 1000 -g 1000 -d /usr/share/elasticsearch elasticsearch
 
