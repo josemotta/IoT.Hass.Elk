@@ -3,6 +3,9 @@
 # And also from ideas from YourSecurityTech, see more details at link below:
 # https://www.yoursecurity.tech/hosting-a-mini-siem.html
 #
+# Based on log below using v10.15.2.
+# kibana_1         | Kibana does not support the current Node.js version v8.16.0. Please use Node.js v10.15.2.
+#
 # Beginning of multi stage Dockerfile
 ################################################################################
 
@@ -22,8 +25,8 @@ RUN groupadd -g 1000 kibana && \
 
 # Get nodejs for armv7l
 WORKDIR /usr/share/node
-RUN curl --retry 8 -s -L -O https://nodejs.org/dist/v8.16.0/node-v8.16.0-linux-armv7l.tar.xz && \
-    tar -xvf node-v8.16.0-linux-armv7l.tar.xz node-v8.16.0-linux-armv7l/bin/node --strip 2
+RUN curl --retry 8 -s -L -O https://nodejs.org/dist/v10.15.2/node-v10.15.2-linux-armv7l.tar.xz && \
+    tar -xvf node-v10.15.2-linux-armv7l.tar.xz node-v10.15.2-linux-armv7l/bin/node --strip 2
     #cp ./node /usr/local/bin/
 
 # Get kibana and disable builtin nodejs
