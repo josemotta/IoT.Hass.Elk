@@ -55,8 +55,8 @@ RUN for iter in {1..10}; do yum update -y && \
 
 # TODO: If "java-11-openjdk-devel" changes, then RUN line below and copy/paste result to be persisted!
 # Sorry, I did not succeed on automating that, since ENV is only accepting static data. (?)
-#RUN export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:/bin/java::") && echo $JAVA_HOME
-ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-11.0.3.7-0.el7_6.arm
+RUN export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:/bin/java::") && echo $JAVA_HOME
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-11.0.4.11-0.el7_6.arm
 
 RUN groupadd -g 1000 elasticsearch && \
     adduser -u 1000 -g 1000 -G 0 -d /usr/share/elasticsearch elasticsearch && \
