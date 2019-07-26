@@ -20,6 +20,13 @@ services:
     networks:
       - elk
 
+# TODO: check issue reported by log:
+# logstash_1       | WARNING: An illegal reflective access operation has occurred
+# logstash_1       | WARNING: Illegal reflective access by com.headius.backport9.modules.Modules (file:/usr/share/logstash/logstash-core/lib/jars/jruby-complete-9.2.7.0.jar) to field java.io.FileDescriptor.fd
+# logstash_1       | WARNING: Please consider reporting this to the maintainers of com.headius.backport9.modules.Modules
+# logstash_1       | WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+# logstash_1       | WARNING: All illegal access operations will be denied in a future release
+
   logstash:
     image: josemottalopes/iothasselk_logstash
     build:
