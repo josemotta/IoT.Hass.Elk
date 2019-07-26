@@ -83,7 +83,7 @@ RUN chgrp 0 /usr/local/bin/docker-entrypoint.sh && \
     chmod 0775 /usr/local/bin/docker-entrypoint.sh
 
 # Install required plugins
-RUN elasticsearch-plugin install analysis-icu
+#RUN elasticsearch-plugin install analysis-icu
 
 EXPOSE 9200 9300
 

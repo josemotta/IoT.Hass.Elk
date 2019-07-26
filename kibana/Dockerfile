@@ -3,9 +3,11 @@
 # And also from ideas from YourSecurityTech, nodejs v10.14.0 OK to kibana 6.5.4, more details at link:
 # https://www.yoursecurity.tech/hosting-a-mini-siem.html
 #
-# Trying for Kibana 6.8.1, see logs below that indicates nodejs 10.15.2 but it also failed.
+# Trying for Kibana 6.8.1: although logs below indicates nodejs 10.15.2, it also failed.
 # kibana_1         | Kibana does not support the current Node.js version v8.15.1. Please use Node.js v10.15.2.
 # kibana_1         | Kibana does not support the current Node.js version v8.16.0. Please use Node.js v10.15.2.
+#
+# nodejs v8.14.0: error bad option: --max-http-header-size=65536, removing it from /usr/share/kibana/bin/kibana
 #
 # Beginning of multi stage Dockerfile
 ################################################################################
