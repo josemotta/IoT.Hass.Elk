@@ -23,7 +23,7 @@ RUN groupadd -g 1000 kibana && \
 # Get nodejs for armv7l
 WORKDIR /usr/share/node
 RUN wget https://nodejs.org/dist/v8.14.0/node-v8.14.0-linux-armv7l.tar.xz && \
-    tar -xvf node-v8.14.0-linux-armv7l.tar.xz node-v8.14.0-linux-armv7l/bin/node --strip 2
+    tar -zxvf node-v8.14.0-linux-armv7l.tar.xz node-v8.14.0-linux-armv7l/bin/node --strip 2
     #cp ./node /usr/local/bin/
 
 # Get kibana and disable builtin nodejs
