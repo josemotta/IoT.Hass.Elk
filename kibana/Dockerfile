@@ -1,9 +1,10 @@
 ################################################################################
 # This Dockerfile was adapted from the template at distribution/src/docker/Dockerfile
-# And also from ideas from YourSecurityTech, see more details at link below:
+# And also from ideas from YourSecurityTech, nodejs v10.14.0 OK to kibana 6.5.4, more details at link:
 # https://www.yoursecurity.tech/hosting-a-mini-siem.html
 #
-# Based on log below using v10.15.2.
+# Trying for Kibana 6.8.1, see logs below that indicates nodejs 10.15.2 but it also failed.
+# kibana_1         | Kibana does not support the current Node.js version v8.15.1. Please use Node.js v10.15.2.
 # kibana_1         | Kibana does not support the current Node.js version v8.16.0. Please use Node.js v10.15.2.
 #
 # Beginning of multi stage Dockerfile
@@ -37,7 +38,8 @@ RUN mkdir -p logs && \
     chmod 0777 logs && \
     #rm /usr/share/kibana/node/bin/node && \
     mv /usr/share/kibana/node/bin/node /usr/share/kibana/node/bin/node.bak && \
-    mv /usr/share/kibana/config/kibana.yml /usr/share/kibana/config/kibana.yml.bak
+    mv /usr/share/kibana/config/kibana.yml /usr/share/kibana/config/kibana.yml.bak && \
+    mv /usr/share/kibana/bin/kibana /usr/share/kibana/bin/kibana.bak
 
     # ln -s /usr/share/kibana /opt/kibana
 
@@ -68,6 +70,7 @@ WORKDIR /usr/share/kibana
 COPY --from=builder --chown=1000:0 /usr/share/kibana /usr/share/kibana
 COPY --from=builder --chown=1000:0 /usr/share/node/node /usr/local/bin/
 COPY --chown=1000:0 config/kibana.yml /usr/share/kibana/config/
+COPY --chown=1000:0 bin/kibana /usr/share/kibana/bin/kibana
 COPY --chown=1000:0 config/kibana.service /etc/systemd/system/
 
 # Set-aside the built-in Node.js and force Kibana to use armv7l version
