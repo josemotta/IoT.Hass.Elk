@@ -8,6 +8,7 @@
 # kibana_1         | Kibana does not support the current Node.js version v8.16.0. Please use Node.js v10.15.2.
 #
 # nodejs v8.14.0: error bad option: --max-http-header-size=65536, removing it from /usr/share/kibana/bin/kibana
+# not tested yet: v8.14.1/ & v8.15.0/ 
 #
 # Beginning of multi stage Dockerfile
 ################################################################################
@@ -74,6 +75,7 @@ COPY --from=builder --chown=1000:0 /usr/share/node/node /usr/local/bin/
 COPY --chown=1000:0 config/kibana.yml /usr/share/kibana/config/
 COPY --chown=1000:0 bin/kibana /usr/share/kibana/bin/kibana
 COPY --chown=1000:0 config/kibana.service /etc/systemd/system/
+RUN chmod 0755 /usr/share/kibana/bin/kibana
 
 # Set-aside the built-in Node.js and force Kibana to use armv7l version
 RUN ln -s /usr/local/bin/node /usr/share/kibana/node/bin/node
