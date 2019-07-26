@@ -23,28 +23,30 @@ ENV PATH=/usr/share/kibana/bin:$PATH
 RUN groupadd -g 1000 kibana && \
     adduser -u 1000 -g 1000 -d /usr/share/kibana kibana
 
-# Get nodejs for armv7l
-WORKDIR /usr/share/node
-RUN curl --retry 8 -s -L -O https://nodejs.org/dist/v8.15.1/node-v8.15.1-linux-armv7l.tar.xz && \
-    tar -xvf node-v8.15.1-linux-armv7l.tar.xz node-v8.15.1-linux-armv7l/bin/node --strip 2
-    #cp ./node /usr/local/bin/
-
-# Get kibana and disable builtin nodejs
+# Get kibana and disable builtin nodejs for x86_64
 WORKDIR /usr/share/kibana
 RUN cd /opt && \
     curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/kibana/kibana-6.8.1-linux-x86_64.tar.gz && \
     cd - && \
     tar zxf /opt/kibana-6.8.1-linux-x86_64.tar.gz --strip-components=1 && \
-    mkdir -p logs && \
+    chown -R kibana:kibana /usr/share/kibana/ && \
+    chmod -R g=u /usr/share/kibana && \
+    find /usr/share/kibana -type d -exec chmod g+s {} \;
+
+RUN mkdir -p logs && \
     chmod 0777 logs && \
     #rm /usr/share/kibana/node/bin/node && \
     mv /usr/share/kibana/node/bin/node /usr/share/kibana/node/bin/node.bak && \
     mv /usr/share/kibana/config/kibana.yml /usr/share/kibana/config/kibana.yml.bak
 
-    # chown -R kibana:kibana /usr/share/kibana/ && \
-    # chmod -R g=u /usr/share/kibana && \
-    # find /usr/share/kibana -type d -exec chmod g+s {} \; && \
     # ln -s /usr/share/kibana /opt/kibana
+
+# Get nodejs for armv7l
+WORKDIR /usr/share/node
+RUN curl --retry 8 -s -L -O https://nodejs.org/dist/v8.14.0/node-v8.14.0-linux-armv7l.tar.xz && \
+    tar -xvf node-v8.14.0-linux-armv7l.tar.xz node-v8.14.0-linux-armv7l/bin/node --strip 2
+    #cp ./node /usr/local/bin/
+
 
 ################################################################################
 # Build stage 1 (the actual kibana image):
