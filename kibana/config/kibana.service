@@ -1,0 +1,9 @@
+[Unit]
+Description=Kibana
+
+[Service]
+ExecStart=/usr/share/kibana/bin/kibana
+
+[Install]
+WantedBy=multi-user.target
+
