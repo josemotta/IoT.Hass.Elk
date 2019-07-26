@@ -69,9 +69,9 @@ RUN chmod 0755 /usr/local/bin/docker-entrypoint
 
 # TODO: "env2yaml/env2yaml" binary should be compiled to armv7, the GO source code can be found at: 
 # https://github.com/elastic/logstash-docker/blob/f72d4a13e2c4bf90fb24378640c51aeb1cc943e6/build/logstash/env2yaml/env2yaml.go
-# Since I did not succeed on that yet, I commented "bin/docker-entrypoint" line 7 to avoid errors.
-ADD env2yaml/env2yaml /usr/local/bin/
-RUN chmod 0755 /usr/local/bin/env2yaml
+# I also commented out the "bin/docker-entrypoint" line 7 to avoid errors.
+#ADD env2yaml/env2yaml /usr/local/bin/
+#RUN chmod 0755 /usr/local/bin/env2yaml
 
 EXPOSE 9600 5044
 

@@ -94,4 +94,4 @@ license="Elastic License"
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 # Dummy overridable parameter parsed by entrypoint
-CMD ["kbwrapper"]
+#CMD ["kbwrapper"]
