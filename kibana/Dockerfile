@@ -3,7 +3,7 @@
 # And also from ideas from YourSecurityTech, nodejs v10.14.0 OK to kibana 6.5.4, more details at link:
 # https://www.yoursecurity.tech/hosting-a-mini-siem.html
 #
-# Trying for Kibana 6.8.1: although logs below indicates nodejs 10.15.2, it also failed.
+# No sucess for Kibana 6.8.1: although logs below indicates nodejs 10.15.2, it also failed.
 # kibana_1         | Kibana does not support the current Node.js version v8.14.0. Please use Node.js v10.15.2.
 # kibana_1         | Kibana does not support the current Node.js version v8.14.1. Please use Node.js v10.15.2.
 # kibana_1         | Kibana does not support the current Node.js version v8.15.0. Please use Node.js v10.15.2.
@@ -33,9 +33,9 @@ RUN groupadd -g 1000 kibana && \
 # Get kibana and disable builtin nodejs for x86_64
 WORKDIR /usr/share/kibana
 RUN cd /opt && \
-    curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/kibana/kibana-6.8.1-linux-x86_64.tar.gz && \
+    curl --retry 8 -s -L -O https://artifacts.elastic.co/downloads/kibana/kibana-6.5.4-linux-x86_64.tar.gz && \
     cd - && \
-    tar zxf /opt/kibana-6.8.1-linux-x86_64.tar.gz --strip-components=1 && \
+    tar zxf /opt/kibana-6.5.4-linux-x86_64.tar.gz --strip-components=1 && \
     chown -R kibana:kibana /usr/share/kibana/ && \
     chmod -R g=u /usr/share/kibana && \
     find /usr/share/kibana -type d -exec chmod g+s {} \;
@@ -51,8 +51,8 @@ RUN mkdir -p logs && \
 
 # Get nodejs for armv7l
 WORKDIR /usr/share/node
-RUN curl --retry 8 -s -L -O https://nodejs.org/dist/v10.15.2/node-v10.15.2-linux-armv7l.tar.xz && \
-    tar -xvf node-v10.15.2-linux-armv7l.tar.xz node-v10.15.2-linux-armv7l/bin/node --strip 2
+RUN curl --retry 8 -s -L -O https://nodejs.org/dist/v10.14.0/node-v10.14.0-linux-armv7l.tar.xz && \
+    tar -xvf node-v10.14.0-linux-armv7l.tar.xz node-v10.14.0-linux-armv7l/bin/node --strip 2
     #cp ./node /usr/local/bin/
 
 
@@ -76,9 +76,9 @@ WORKDIR /usr/share/kibana
 COPY --from=builder --chown=1000:0 /usr/share/kibana /usr/share/kibana
 COPY --from=builder --chown=1000:0 /usr/share/node/node /usr/local/bin/
 COPY --chown=1000:0 config/kibana.yml /usr/share/kibana/config/
-COPY --chown=1000:0 bin/kibana /usr/share/kibana/bin/kibana
+#COPY --chown=1000:0 bin/kibana /usr/share/kibana/bin/kibana
 COPY --chown=1000:0 config/kibana.service /etc/systemd/system/
-RUN chmod 0755 /usr/share/kibana/bin/kibana
+#RUN chmod 0755 /usr/share/kibana/bin/kibana
 
 # Set-aside the built-in Node.js and force Kibana to use armv7l version
 RUN ln -s /usr/local/bin/node /usr/share/kibana/node/bin/node
@@ -104,7 +104,7 @@ EXPOSE 5601
 LABEL org.label-schema.schema-version="1.0" \
   org.label-schema.vendor="Elastic" \
   org.label-schema.name="kibana" \
-  org.label-schema.version="6.8.1" \
+  org.label-schema.version="6.5.4" \
   org.label-schema.url="https://www.elastic.co/products/kibana" \
   org.label-schema.vcs-url="https://github.com/elastic/kibana" \
 license="Elastic License"
