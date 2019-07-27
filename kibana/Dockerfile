@@ -46,7 +46,7 @@ RUN mkdir -p logs && \
     chmod 0777 logs && \
     #rm /usr/share/kibana/node/bin/node && \
     mv /usr/share/kibana/node/bin/node /usr/share/kibana/node/bin/node.bak && \
-    mv /usr/share/kibana/config/kibana.yml /usr/share/kibana/config/kibana.yml.bak && \
+    mv /usr/share/kibana/config/kibana.yml /usr/share/kibana/config/kibana.yml.bak
     #mv /usr/share/kibana/bin/kibana /usr/share/kibana/bin/kibana.bak
 
     # ln -s /usr/share/kibana /opt/kibana
