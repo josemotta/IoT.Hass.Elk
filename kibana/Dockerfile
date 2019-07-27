@@ -4,6 +4,7 @@
 # https://www.yoursecurity.tech/hosting-a-mini-siem.html
 #
 # Trying for Kibana 6.8.1: although logs below indicates nodejs 10.15.2, it also failed.
+# kibana_1         | Kibana does not support the current Node.js version v8.14.0. Please use Node.js v10.15.2.
 # kibana_1         | Kibana does not support the current Node.js version v8.15.1. Please use Node.js v10.15.2.
 # kibana_1         | Kibana does not support the current Node.js version v8.16.0. Please use Node.js v10.15.2.
 #
@@ -48,8 +49,8 @@ RUN mkdir -p logs && \
 
 # Get nodejs for armv7l
 WORKDIR /usr/share/node
-RUN curl --retry 8 -s -L -O https://nodejs.org/dist/v8.14.0/node-v8.14.0-linux-armv7l.tar.xz && \
-    tar -xvf node-v8.14.0-linux-armv7l.tar.xz node-v8.14.0-linux-armv7l/bin/node --strip 2
+RUN curl --retry 8 -s -L -O https://nodejs.org/dist/v8.14.1/node-v8.14.1-linux-armv7l.tar.xz && \
+    tar -xvf node-v8.14.1-linux-armv7l.tar.xz node-v8.14.1-linux-armv7l/bin/node --strip 2
     #cp ./node /usr/local/bin/
 
 
