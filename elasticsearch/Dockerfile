@@ -90,7 +90,7 @@ EXPOSE 9200 9300
 LABEL org.label-schema.schema-version="1.0" \
   org.label-schema.vendor="Elastic" \
   org.label-schema.name="elasticsearch" \
-  org.label-schema.version="6.8.1" \
+  org.label-schema.version="6.5.4" \
   org.label-schema.url="https://www.elastic.co/products/elasticsearch" \
   org.label-schema.vcs-url="https://github.com/elastic/elasticsearch" \
   license="Elastic License"

@@ -1,17 +1,19 @@
 ################################################################################
 # This Dockerfile was adapted from the template at distribution/src/docker/Dockerfile
-# And also from ideas from YourSecurityTech, nodejs v10.14.0 OK to kibana 6.5.4, more details at link:
+# 
+# Better option seems to be Kibana 6.5.4 + Nodejs v10.14.0, see YourSecurityTech link:
 # https://www.yoursecurity.tech/hosting-a-mini-siem.html
 #
-# No sucess for Kibana 6.8.1: although logs below indicates nodejs 10.15.2, it also failed.
 # kibana_1         | Kibana does not support the current Node.js version v8.14.0. Please use Node.js v10.15.2.
 # kibana_1         | Kibana does not support the current Node.js version v8.14.1. Please use Node.js v10.15.2.
 # kibana_1         | Kibana does not support the current Node.js version v8.15.0. Please use Node.js v10.15.2.
 # kibana_1         | Kibana does not support the current Node.js version v8.15.1. Please use Node.js v10.15.2.
 # kibana_1         | Kibana does not support the current Node.js version v8.16.0. Please use Node.js v10.15.2.
 #
-# nodejs v8.14.0: error bad option: --max-http-header-size=65536, removing it from /usr/share/kibana/bin/kibana
-# not tested yet: v8.15.0/ 
+# Kibana 6.8.1: although logs indicates nodejs 10.15.2, error is shown below.
+# /usr/share/kibana/bin/../node/bin/node: /lib/libstdc++.so.6: version `GLIBCXX_3.4.20' not found
+#
+# nodejs v8.14.0: error bad option: --max-http-header-size=65536, removed it from /usr/share/kibana/bin/kibana
 #
 # Beginning of multi stage Dockerfile
 ################################################################################
@@ -45,7 +47,7 @@ RUN mkdir -p logs && \
     #rm /usr/share/kibana/node/bin/node && \
     mv /usr/share/kibana/node/bin/node /usr/share/kibana/node/bin/node.bak && \
     mv /usr/share/kibana/config/kibana.yml /usr/share/kibana/config/kibana.yml.bak && \
-    mv /usr/share/kibana/bin/kibana /usr/share/kibana/bin/kibana.bak
+    #mv /usr/share/kibana/bin/kibana /usr/share/kibana/bin/kibana.bak
 
     # ln -s /usr/share/kibana /opt/kibana
 
