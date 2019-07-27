@@ -16,7 +16,7 @@ services:
     environment:
       ES_JAVA_OPTS: "-Xmx256m -Xms256m"
       ELASTIC_PASSWORD: changeme
-    restart: always
+    #restart: always
     networks:
       - elk
 
@@ -49,7 +49,7 @@ services:
   #     - elasticsearch
 
   kibana:
-    #image: docker.elastic.co/kibana/kibana:6.8.1
+    image: josemottalopes/iothasselk_kibana
     build:
       context: kibana/
     #  args:
@@ -58,7 +58,7 @@ services:
       - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
     ports:
       - "5601:5601"
-    restart: always
+    #restart: always
     networks:
       - elk
     depends_on:
