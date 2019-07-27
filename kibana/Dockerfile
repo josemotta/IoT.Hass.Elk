@@ -99,8 +99,6 @@ RUN chmod 0755 /usr/local/bin/docker-entrypoint.sh
 #ADD env2yaml/env2yaml /usr/local/bin/
 #RUN chmod 0755 /usr/local/bin/env2yaml
 
-RUN apt-get upgrade -y libstdc++6
-
 EXPOSE 5601
 
 LABEL org.label-schema.schema-version="1.0" \
